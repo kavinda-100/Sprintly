@@ -63,3 +63,41 @@ sqlx migrate run
 # this step run is the manual way
 # `src/db/mod.rs` has the code to run migrations automatically when the app starts
 ```
+
+## Relationship Diagram
+
+```ascii
++------------+        +-------------+        +----------+
+|   users    |        | workspaces  |        | projects |
++------------+        +-------------+        +----------+
+| id         |<-------| owner_id    |        | id       |
+| email      |        | name        |<-------| workspace_id
+| name       |        | created_at  |        | name
+| google_id  |        +-------------+        | description
++------------+                               +----------+
+       |                                          |
+       |                                          |
+       |                                          |
+       v                                          v
++-------------+    +----------------+    +----------------+
+|   tasks     |<---| task_assignees |--->|     users      |
++-------------+    +----------------+    +----------------+
+| id          |    | task_id        |    | id             |
+| project_id  |    | user_id        |    +----------------+
+| title       |    +----------------+
+| description |
+| status_id   |----> task_status
+| priority_id |----> task_priority
+| owner_id    |
++-------------+
+       |
+       v
++-------------+
+|  comments   |
++-------------+
+| id          |
+| task_id     |
+| user_id     |
+| content     |
++-------------+
+```
