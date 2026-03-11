@@ -12,11 +12,11 @@ pub async fn establish_connection() -> PgPool {
         .await
         .expect("Failed to connect to the database");
 
-    //TODO: Run database migrations to ensure the vehicles table exists
-    // sqlx::migrate!()
-    //     .run(&pool)
-    //     .await
-    //     .expect("Failed to run database migrations");
+    //Run database migrations to ensure the tables exist
+    sqlx::migrate!()
+        .run(&pool)
+        .await
+        .expect("Failed to run database migrations");
 
     pool
 }

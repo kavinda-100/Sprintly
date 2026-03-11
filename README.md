@@ -41,3 +41,25 @@ A production-ready Task Management REST API built with **Rust**, **Axum**, and *
 ---
 
 ## 📁 Project Structure (coming soon)
+
+## database migrations
+
+1. install sqlx-cli
+
+```bash
+cargo install sqlx-cli --no-default-features --features postgres
+```
+
+2. create a migration
+
+```bash
+sqlx migrate add init_schema
+```
+
+3. run migrations
+
+```bash
+sqlx migrate run
+# this step run is the manual way
+# `src/db/mod.rs` has the code to run migrations automatically when the app starts
+```
