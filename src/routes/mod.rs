@@ -1,11 +1,11 @@
 use axum::{Router, routing::get};
 // use sqlx::PgPool;
 
-use crate::controllers::root_controller::{health_check, root_handler};
+use crate::{controllers::root_controller::{health_check, root_handler}, config::AppState};
 
 /// Creates the main API router with all route groups
 /// This is where you compose all your route modules together
-pub fn create_routes() -> Router {
+pub fn create_routes() -> Router<AppState> {
     Router::new()
         // Root routes (no prefix)
         .route("/", get(root_handler))
@@ -17,6 +17,6 @@ pub fn create_routes() -> Router {
 }
 
 
-// fn api_v1_routes(pool: PgPool) -> Router {
-//     Router::new().merge(vehicle_routes(pool.clone()))
+// fn api_v1_routes() -> Router<AppState> {
+//     Router::new().merge(vehicle_routes())
 // }

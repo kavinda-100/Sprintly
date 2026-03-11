@@ -1,0 +1,10 @@
+@baseUrl = http://localhost:5000
+@apiV1 = http://localhost:5000/api/v1
+
+## Home route
+GET {{baseUrl}}/
+
+###
+
+## Health check
+GET {{baseUrl}}/health
