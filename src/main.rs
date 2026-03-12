@@ -1,5 +1,4 @@
 use dotenvy::dotenv;
-use std::env;
 
 mod config;
 mod controllers;
@@ -28,7 +27,8 @@ async fn main() {
 
     // Create application state with the database pool
     let app_state = AppState {
-        db: pool, // pass the database pool to the application state
+        app_name: String::from("Sprintly API"), // app name
+        db: pool,                               // pass the database pool to the application state
         env_config: env_config.clone(), // pass the environment configuration to the application state
     };
 
