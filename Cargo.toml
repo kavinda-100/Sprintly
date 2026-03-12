@@ -29,7 +29,7 @@ dotenvy = "0.15"
 
 # Logging
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 
 # UUID
 uuid = { version = "1", features = ["serde", "v4"] }
@@ -48,7 +48,7 @@ argon2 = "0.5"
 
 # Middleware utilities
 tower = "0.5.3"
-tower-http = { version = "0.6.8", features = ["cors", "trace"] }
+tower-http = { version = "0.6.8", features = ["cors", "trace", "fs"] }
 
 # Validation
 validator = { version = "0.20.0", features = ["derive"] }

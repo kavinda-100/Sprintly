@@ -8,3 +8,10 @@ GET {{baseUrl}}/
 
 ## Health check
 GET {{baseUrl}}/health
+
+###
+
+## Auth check
+GET {{apiV1}}/auth/check
+
+###
