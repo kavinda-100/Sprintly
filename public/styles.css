@@ -6,11 +6,525 @@
 }
 
 body {
-	background-color: #f4f4f4;
+	background: linear-gradient(135deg, #edf0f5 0%, #cdb3e7 100%);
 	color: #333;
 	width: 100%;
-	height: 100vh;
+	min-height: 100vh;
+	padding: 0;
+	margin: 0;
+}
+
+body:has(.full-width-container) {
+	display: block;
+	padding: 0;
+}
+
+body:has(.form-container) {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	padding: 20px;
+}
+
+/* Full Width Container */
+.full-width-container {
+	background: white;
+	min-height: 100vh;
+	width: 100%;
+	animation: fadeIn 0.5s ease-in;
+}
+
+/* API Header */
+.api-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 30px 60px;
+	background: white;
+	border-bottom: 2px solid #f0f0f0;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.api-title {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+}
+
+.api-title h1 {
+	color: #667eea;
+	font-size: 2rem;
+	margin: 0;
+	font-weight: 700;
+}
+
+.version-badge {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: white;
+	padding: 5px 15px;
+	border-radius: 20px;
+	font-size: 0.85rem;
+	font-weight: 600;
+}
+
+.header-btn {
+	margin: 0;
+	width: 300px;
+	padding: 12px 35px;
+}
+
+/* Welcome Section */
+.welcome-section {
+	padding: 50px 60px 30px;
+	text-align: center;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: white;
+}
+
+.welcome-text {
+	margin: 0;
+	font-size: 1.3rem;
+	line-height: 1.8;
+	color: white;
+}
+
+/* Endpoints Section */
+.endpoints-section {
+	padding: 50px 60px;
+}
+
+.endpoints-section h2 {
+	color: #333;
+	font-size: 1.8rem;
+	margin-bottom: 30px;
+	font-weight: 600;
+}
+
+/* Table Container */
+.table-container {
+	overflow-x: auto;
+	border-radius: 12px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Endpoints Table */
+.endpoints-table {
+	width: 100%;
+	border-collapse: collapse;
+	background: white;
+	border-radius: 12px;
+	overflow: hidden;
+}
+
+.endpoints-table thead {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: white;
+}
+
+.endpoints-table th {
+	padding: 18px 20px;
+	text-align: left;
+	font-weight: 600;
+	font-size: 0.95rem;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.endpoints-table tbody tr {
+	border-bottom: 1px solid #f0f0f0;
+	transition: background-color 0.2s ease;
+}
+
+.endpoints-table tbody tr:hover {
+	background-color: #f8f9fa;
+}
+
+.endpoints-table tbody tr:last-child {
+	border-bottom: none;
+}
+
+.endpoints-table td {
+	padding: 20px;
+	color: #555;
+	font-size: 0.95rem;
+}
+
+.endpoints-table td code {
+	background: #f8f9fa;
+	padding: 6px 12px;
+	border-radius: 6px;
+	color: #667eea;
+	font-family: 'Courier New', monospace;
+	font-size: 0.9rem;
+	font-weight: 600;
+}
+
+/* Method Badges */
+.method-badge {
+	display: inline-block;
+	padding: 5px 12px;
+	border-radius: 6px;
+	font-weight: 700;
+	font-size: 0.8rem;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.method-badge.get {
+	background: #d1f4e0;
+	color: #0d8a4d;
+}
+
+.method-badge.post {
+	background: #cfe8fc;
+	color: #0c5c9e;
+}
+
+.method-badge.put {
+	background: #fff4ce;
+	color: #9e6c00;
+}
+
+.method-badge.delete {
+	background: #ffd6d6;
+	color: #c41e3a;
+}
+
+/* Status Badges */
+.status-badge {
+	display: inline-block;
+	padding: 5px 12px;
+	border-radius: 6px;
+	font-weight: 600;
+	font-size: 0.8rem;
+}
+
+.status-badge.active {
+	background: #d1f4e0;
+	color: #0d8a4d;
+}
+
+.status-badge.inactive {
+	background: #f0f0f0;
+	color: #666;
+}
+
+/* Container Styles (for other pages) */
+.container {
+	background: white;
+	border-radius: 20px;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+	padding: 50px 60px;
+	max-width: 500px;
+	width: 100%;
+	text-align: center;
+	animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Headings */
+h1 {
+	color: #667eea;
+	font-size: 2.5rem;
+	margin-bottom: 10px;
+	font-weight: 700;
+}
+
+h2 {
+	color: #764ba2;
+	font-size: 1.2rem;
+	margin-bottom: 20px;
+	font-weight: 400;
+}
+
+h3 {
+	color: #444;
+	font-size: 1.3rem;
+	margin: 30px 0 15px;
+	font-weight: 600;
+}
+
+p {
+	color: #666;
+	line-height: 1.6;
+	margin-bottom: 25px;
+	font-size: 1.1rem;
+}
+
+/* Endpoints Section */
+.endpoints {
+	background: #f8f9fa;
+	border-radius: 10px;
+	padding: 20px;
+	margin: 25px 0;
+	text-align: left;
+}
+
+.endpoints ul {
+	list-style: none;
+	padding: 0;
+}
+
+.endpoints li {
+	padding: 10px 0;
+	color: #555;
+	font-size: 1rem;
+}
+
+.endpoints code {
+	background: #e9ecef;
+	padding: 5px 10px;
+	border-radius: 5px;
+	color: #667eea;
+	font-family: 'Courier New', monospace;
+	font-size: 0.9rem;
+}
+
+/* Button Styles */
+.btn {
+	display: inline-block;
+	padding: 15px 40px;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: white;
+	text-decoration: none;
+	border-radius: 50px;
+	font-size: 1.1rem;
+	font-weight: 600;
+	margin-top: 20px;
+	transition: all 0.3s ease;
+	box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+	border: none;
+	cursor: pointer;
+	width: auto;
+}
+
+.btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.btn:active {
+	transform: translateY(0);
+}
+
+/* Form Styles */
+.form-container {
+	background: white;
+	border-radius: 20px;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+	padding: 50px 60px;
+	max-width: 450px;
+	width: 100%;
+	animation: fadeIn 0.5s ease-in;
+}
+
+.form-header {
+	margin-bottom: 40px;
+}
+
+.form-header h1 {
+	margin-bottom: 10px;
+}
+
+.form-header p {
+	color: #666;
+	font-size: 1rem;
+	margin-bottom: 0;
+}
+
+.form-group {
+	margin-bottom: 25px;
+	text-align: left;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 8px;
+	color: #444;
+	font-weight: 600;
+	font-size: 0.95rem;
+}
+
+.form-group input {
+	width: 100%;
+	padding: 15px;
+	border: 2px solid #e9ecef;
+	border-radius: 10px;
+	font-size: 1rem;
+	transition: all 0.3s ease;
+	outline: none;
+}
+
+.form-group input:focus {
+	border-color: #667eea;
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group input::placeholder {
+	color: #adb5bd;
+}
+
+/* Google Button */
+.google-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	padding: 15px 40px;
+	background: white;
+	color: #444;
+	border: 2px solid #e9ecef;
+	border-radius: 50px;
+	font-size: 1rem;
+	font-weight: 600;
+	margin-top: 20px;
+	transition: all 0.3s ease;
+	cursor: pointer;
+	text-decoration: none;
+	width: 100%;
+}
+
+.google-btn:hover {
+	background: #f8f9fa;
+	border-color: #667eea;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.google-btn svg {
+	width: 20px;
+	height: 20px;
+}
+
+/* Divider */
+.divider {
+	display: flex;
+	align-items: center;
+	margin: 30px 0 20px;
+	color: #adb5bd;
+	font-size: 0.9rem;
+}
+
+.divider::before,
+.divider::after {
+	content: '';
+	flex: 1;
+	height: 1px;
+	background: #e9ecef;
+}
+
+.divider::before {
+	margin-right: 15px;
+}
+
+.divider::after {
+	margin-left: 15px;
+}
+
+/* Footer Links */
+.form-footer {
+	margin-top: 30px;
+	color: #666;
+	font-size: 0.95rem;
+}
+
+.form-footer a {
+	color: #667eea;
+	text-decoration: none;
+	font-weight: 600;
+	transition: color 0.3s ease;
+}
+
+.form-footer a:hover {
+	color: #764ba2;
+	text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+	.api-header {
+		flex-direction: column;
+		gap: 20px;
+		padding: 25px 30px;
+		text-align: center;
+	}
+
+	.api-title {
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.api-title h1 {
+		font-size: 1.8rem;
+	}
+
+	.header-btn {
+		width: 100%;
+	}
+
+	.welcome-section {
+		padding: 40px 30px 25px;
+	}
+
+	.welcome-text {
+		font-size: 1.1rem;
+	}
+
+	.endpoints-section {
+		padding: 40px 30px;
+	}
+
+	.endpoints-section h2 {
+		font-size: 1.5rem;
+	}
+
+	.endpoints-table th,
+	.endpoints-table td {
+		padding: 12px;
+		font-size: 0.85rem;
+	}
+
+	.endpoints-table th:nth-child(3),
+	.endpoints-table td:nth-child(3) {
+		display: none;
+	}
+}
+
+@media (max-width: 600px) {
+	.container,
+	.form-container {
+		padding: 30px 25px;
+	}
+
+	h1 {
+		font-size: 2rem;
+	}
+
+	.btn,
+	.google-btn {
+		padding: 12px 30px;
+		font-size: 1rem;
+	}
+
+	.endpoints-table th,
+	.endpoints-table td {
+		padding: 10px 8px;
+		font-size: 0.8rem;
+	}
+
+	.method-badge,
+	.status-badge {
+		padding: 4px 8px;
+		font-size: 0.7rem;
+	}
 }

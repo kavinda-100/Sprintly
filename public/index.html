@@ -6,28 +6,95 @@
 		<title>Sprintly API</title>
 		<!-- styles sheet -->
 		<link rel="stylesheet" href="/styles.css" />
+		<!-- load js -->
+		<script src="/table.js"></script>
 	</head>
 	<body>
-		<!-- main content -->
-		<div>
-			<h1>Sprintly API</h1>
-			<h2>Version 1.0</h2>
-			<p>Welcome to the Sprintly API!</p>
+		<!-- Full width container -->
+		<div class="full-width-container">
+			<!-- Header with API name and button -->
+			<header class="api-header">
+				<div class="api-title">
+					<h1>Sprintly API</h1>
+					<span class="version-badge">v1.0</span>
+				</div>
+				<a href="/login.html" class="btn header-btn">Get Started</a>
+			</header>
 
-			<!-- endpoints -->
-			<div>
-				<h3>Available Endpoints:</h3>
-				<ul>
-					<li>
-						<strong>Authentication:</strong>
-						<code>/api/v1/auth/*</code>
-					</li>
-					<!-- <li><strong>others:</strong> <code>/api/v1/*</code></li> --- IGNORE --- -->
-				</ul>
-			</div>
+			<!-- Welcome section -->
+			<section class="welcome-section">
+				<p class="welcome-text">
+					Welcome to the Sprintly API! Your project management
+					solution built with Rust and modern web technologies.
+				</p>
+			</section>
 
-			<!-- get started button -->
-			<a href="/login.html"> Get Started </a>
+			<!-- Endpoints Table -->
+			<section class="endpoints-section">
+				<h2>Available Endpoints</h2>
+				<div class="table-container">
+					<table class="endpoints-table">
+						<thead>
+							<tr>
+								<th>Endpoint</th>
+								<th>Method</th>
+								<th>Description</th>
+								<th>Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td><code>/health</code></td>
+								<td>
+									<span class="method-badge get">GET</span>
+								</td>
+								<td>Health check endpoint</td>
+								<td>
+									<span class="status-badge active"
+										>Active</span
+									>
+								</td>
+							</tr>
+							<tr>
+								<td><code>/api/v1/auth/register</code></td>
+								<td>
+									<span class="method-badge post">POST</span>
+								</td>
+								<td>Register a new user account</td>
+								<td>
+									<span class="status-badge active"
+										>Active</span
+									>
+								</td>
+							</tr>
+							<tr>
+								<td><code>/api/v1/auth/login</code></td>
+								<td>
+									<span class="method-badge post">POST</span>
+								</td>
+								<td>Login with email and password</td>
+								<td>
+									<span class="status-badge active"
+										>Active</span
+									>
+								</td>
+							</tr>
+							<tr>
+								<td><code>/api/v1/auth/google</code></td>
+								<td>
+									<span class="method-badge get">GET</span>
+								</td>
+								<td>Login with Google OAuth</td>
+								<td>
+									<span class="status-badge active"
+										>Active</span
+									>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</section>
 		</div>
 	</body>
 </html>
