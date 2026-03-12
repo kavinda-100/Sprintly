@@ -4,8 +4,7 @@ use tower_http::services::fs::ServeDir;
 pub mod auth_routes;
 
 use crate::{
-    config::AppState,
-    controllers::root_controller::health_check,
+    config::AppState, controllers::root_controller::health_check,
     routes::auth_routes::create_auth_routes,
 };
 

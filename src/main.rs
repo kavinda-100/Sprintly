@@ -3,6 +3,7 @@ use dotenvy::dotenv;
 mod config;
 mod controllers;
 mod db;
+mod dtos;
 mod middleware;
 mod models;
 mod routes;
@@ -23,7 +24,7 @@ async fn main() {
     let env_config = EnvConfig::from_env();
 
     // Establish database connection and run migrations
-    let pool = db::establish_connection().await;
+    let pool = db::establish_connection(&env_config.database_url).await;
 
     // Create application state with the database pool
     let app_state = AppState {
