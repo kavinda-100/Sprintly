@@ -8,7 +8,7 @@ help:
 	@echo "  clean   - Clean target directory"
 
 run:
-	cargo watch -c -x run 
+	cargo watch -c -x run
 	
 build:
 	cargo build

@@ -26,6 +26,7 @@ async fn main() {
     // Establish database connection and run migrations
     let pool = db::establish_connection(&env_config.database_url).await;
 
+
     // Create application state with the database pool
     let app_state = AppState {
         app_name: String::from("Sprintly API"), // app name
