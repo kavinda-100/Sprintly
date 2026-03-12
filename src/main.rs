@@ -1,4 +1,7 @@
 use dotenvy::dotenv;
+use tower_http::trace::TraceLayer;
+use tower_http::trace::{DefaultMakeSpan, DefaultOnResponse};
+use tracing_subscriber::EnvFilter;
 
 mod config;
 mod controllers;
@@ -20,6 +23,19 @@ async fn main() {
     // Load environment variables from .env file
     dotenv().ok();
 
+    // Initialize tracing subscriber for logging
+    // Default to "debug" level to show TraceLayer logs, override with RUST_LOG env var
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("debug")),
+        )
+        .init();
+
+    // Create a TraceLayer for logging HTTP requests and responses
+    let trace = TraceLayer::new_for_http()
+        .make_span_with(DefaultMakeSpan::new().include_headers(true))
+        .on_response(DefaultOnResponse::new().include_headers(true));
+
     // Load environment configuration
     let env_config = EnvConfig::from_env();
 
@@ -34,7 +50,10 @@ async fn main() {
     };
 
     // Build the application with all routes
-    let app = create_routes().with_state(app_state);
+    let app = create_routes()
+        .with_state(app_state)
+        // Add logging middleware
+        .layer(trace);
 
     // Start the server
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", env_config.port))
