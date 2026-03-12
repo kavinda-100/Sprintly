@@ -23,7 +23,7 @@ use crate::config::AppState;
  */
 pub async fn health_check(State(state): State<AppState>) -> Json<Value> {
     Json(json!({
-        "status": "healthy",
+        "status": "API is Healthy",
         "timestamp": chrono::Utc::now().to_rfc3339(),
         "app_name": state.app_name,
         "port": state.env_config.port,
