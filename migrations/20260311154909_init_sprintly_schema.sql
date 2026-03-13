@@ -20,6 +20,12 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- =======================
+-- USERS TABLE INDEXES
+-- =======================
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);
+
+-- =======================
 -- WORKSPACES TABLE
 -- =======================
 CREATE TABLE IF NOT EXISTS workspaces (
@@ -29,6 +35,11 @@ CREATE TABLE IF NOT EXISTS workspaces (
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+-- =======================
+-- WORKSPACES TABLE INDEXES
+-- =======================
+CREATE INDEX IF NOT EXISTS idx_workspaces_owner_id ON workspaces(owner_id);
 
 -- =======================
 -- PROJECTS TABLE
@@ -41,6 +52,11 @@ CREATE TABLE IF NOT EXISTS projects (
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+-- =======================
+-- PROJECTS TABLE INDEXES
+-- =======================
+CREATE INDEX IF NOT EXISTS idx_projects_workspace_id ON projects(workspace_id);
 
 -- =======================
 -- TASK STATUS & PRIORITY
@@ -71,6 +87,15 @@ CREATE TABLE IF NOT EXISTS tasks (
 );
 
 -- =======================
+-- TASKS TABLE INDEXES
+-- =======================
+CREATE INDEX IF NOT EXISTS idx_tasks_project_id ON tasks(project_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_status_id ON tasks(status_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_priority_id ON tasks(priority_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_owner_id ON tasks(owner_id);
+
+
+-- =======================
 -- TASK ASSIGNEES (MANY-TO-MANY)
 -- =======================
 CREATE TABLE IF NOT EXISTS task_assignees (
@@ -78,6 +103,12 @@ CREATE TABLE IF NOT EXISTS task_assignees (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     PRIMARY KEY (task_id, user_id)
 );
+
+-- =======================
+-- TASK ASSIGNEES TABLE INDEXES
+-- =======================
+CREATE INDEX IF NOT EXISTS idx_task_assignees_task_id ON task_assignees(task_id);
+CREATE INDEX IF NOT EXISTS idx_task_assignees_user_id ON task_assignees(user_id);
 
 -- =======================
 -- COMMENTS TABLE
@@ -90,3 +121,9 @@ CREATE TABLE IF NOT EXISTS comments (
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+-- =======================
+-- COMMENTS TABLE INDEXES
+-- =======================
+CREATE INDEX IF NOT EXISTS idx_comments_task_id ON comments(task_id);
+CREATE INDEX IF NOT EXISTS idx_comments_user_id ON comments(user_id);
