@@ -1,4 +1,5 @@
 use dotenvy::dotenv;
+use tower_cookies::CookieManagerLayer;
 use tower_http::trace::TraceLayer;
 use tower_http::trace::{DefaultMakeSpan, DefaultOnResponse};
 use tracing_subscriber::EnvFilter;
@@ -54,7 +55,9 @@ async fn main() {
     let app = create_routes()
         .with_state(app_state)
         // Add logging middleware
-        .layer(trace);
+        .layer(trace)
+        // Add cookie management middleware
+        .layer(CookieManagerLayer::new());
 
     // Start the server
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", env_config.port))

@@ -3,7 +3,7 @@ use jsonwebtoken::{EncodingKey, Header, encode};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::constants::JWT_EXPIRATION_DAYS;
+use crate::constants::{JWT_EXPIRATION_DAYS, JWT_EXPIRATION_DAYS_FALLBACK_IN_MILLISECONDS};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[allow(dead_code)]
@@ -19,8 +19,8 @@ pub fn generate_jwt(user_id: Uuid, secret: &str) -> Result<String, jsonwebtoken:
         .map(|t| t.timestamp() as usize)
         .unwrap_or_else(|| {
             eprintln!("Failed to calculate JWT expiration time");
-            // Fallback to a default expiration time (e.g., 1 day) if calculation fails
-            1 * 24 * 3600 // 1 day in seconds
+            // Fallback to a default expiration time (e.g., 7 days) if calculation fails
+            JWT_EXPIRATION_DAYS_FALLBACK_IN_MILLISECONDS
         });
 
     // Create the claims for the JWT
