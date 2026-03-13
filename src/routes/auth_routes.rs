@@ -5,7 +5,7 @@ use axum::{
 
 use crate::{
     config::AppState,
-    controllers::auth_controller::{login_user, logout_user, register_user},
+    controllers::auth_controller::{get_me, login_user, logout_user, register_user},
 };
 
 // Auth routes module
@@ -13,7 +13,7 @@ use crate::{
 // Route path: base_url/api/v1/auth/*
 pub fn create_auth_routes() -> Router<AppState> {
     Router::new()
-        .route("/auth/me", get(|| async { "Get current user info" }))
+        .route("/auth/me", get(get_me))
         .route("/auth/register", post(register_user))
         .route("/auth/login", post(login_user))
         .route("/auth/logout", post(logout_user))

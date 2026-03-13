@@ -18,6 +18,13 @@ const endpoints = [
 		description: 'Login with email and password',
 		status: 'active',
 	},
+	,
+	{
+		endpoint: '/api/v1/auth/logout',
+		method: 'POST',
+		description: 'Logout the current user',
+		status: 'active',
+	},
 	{
 		endpoint: '/api/v1/auth/google',
 		method: 'GET',
