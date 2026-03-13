@@ -4,6 +4,7 @@ use sqlx::FromRow;
 use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
+#[allow(dead_code)]
 pub struct User {
     pub id: Uuid,
     pub email: String,
@@ -16,6 +17,7 @@ pub struct User {
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
+#[allow(dead_code)]
 pub struct Workspace {
     pub id: Uuid,
     pub name: String,
@@ -25,6 +27,7 @@ pub struct Workspace {
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
+#[allow(dead_code)]
 pub struct Project {
     pub id: Uuid,
     pub workspace_id: Uuid,
@@ -35,6 +38,7 @@ pub struct Project {
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
+#[allow(dead_code)]
 pub struct Task {
     pub id: Uuid,
     pub project_id: Uuid,
@@ -48,18 +52,21 @@ pub struct Task {
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
+#[allow(dead_code)]
 pub struct TaskAssignee {
     pub task_id: Uuid,
     pub user_id: Uuid,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
+#[allow(dead_code)]
 pub struct TaskStatus {
     pub id: Uuid,
     pub name: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
+#[allow(dead_code)]
 pub struct Comment {
     pub id: Uuid,
     pub task_id: Uuid,
@@ -70,6 +77,7 @@ pub struct Comment {
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
+#[allow(dead_code)]
 pub struct TaskPriority {
     pub id: Uuid,
     pub name: String,
