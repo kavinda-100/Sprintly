@@ -1,4 +1,4 @@
-.PHONY: help run build test clean
+.PHONY: help run build test clean lint
 
 help:
 	@echo "Available commands:"
@@ -6,6 +6,7 @@ help:
 	@echo "  build   - Build the project"
 	@echo "  test    - Run tests"
 	@echo "  clean   - Clean target directory"
+	@echo "  lint    - Run clippy to check for code issues"
 
 run:
 	cargo watch -c -x run
@@ -18,3 +19,6 @@ test:
 
 clean:
 	cargo clean
+
+lint:
+	cargo clippy -- -D warnings
