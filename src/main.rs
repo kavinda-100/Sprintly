@@ -4,6 +4,7 @@ use tower_http::trace::{DefaultMakeSpan, DefaultOnResponse};
 use tracing_subscriber::EnvFilter;
 
 mod config;
+mod constants;
 mod controllers;
 mod db;
 mod dtos;
