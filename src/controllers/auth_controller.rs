@@ -34,7 +34,7 @@ pub async fn register_user(
     payload.validate().map_err(|e| {
         let error_messages = format_validation_errors(&e);
         tracing::error!("Validation errors: {}", error_messages);
-        ApiError::BadRequest(error_messages.into())
+        ApiError::BadRequest(error_messages)
     })?;
 
     // comparing password and confirm_password
@@ -117,7 +117,7 @@ pub async fn login_user(
     payload.validate().map_err(|e| {
         let error_messages = format_validation_errors(&e);
         tracing::error!("Validation errors: {}", error_messages);
-        ApiError::BadRequest(error_messages.into())
+        ApiError::BadRequest(error_messages)
     })?;
 
     // Check if the user exists in the database
