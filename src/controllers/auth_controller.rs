@@ -5,6 +5,7 @@ use validator::Validate;
 use crate::{
     config::AppState,
     dtos::auth_dto::{AuthUserResponse, LoginUserDto, RegisterUserDto},
+    middleware::auth::AuthUser,
     models::User,
     utils::{
         hash::{hash_password, verify_password},
@@ -233,4 +234,25 @@ pub async fn logout_user(cookies: Cookies) -> Result<Json<ApiResponse<()>>, Stat
         "User logged out successfully",
         None,
     )))
+}
+
+/**
+ * Retrieves the authenticated user's information. Requires the user to be authenticated with a valid JWT token in the cookies. Returns a JSON response with the user's information if authentication is successful, or an appropriate error message if authentication fails.
+ * Path: GET /api/v1/auth/me
+ */
+pub async fn get_me(AuthUser(user): AuthUser) -> Json<ApiResponse<AuthUserResponse>> {
+    Json(ApiResponse::new(
+        true,
+        StatusCode::OK,
+        "Authenticated user",
+        Some(AuthUserResponse {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            google_id: user.google_id,
+            avatar_url: user.avatar_url,
+            created_at: user.created_at,
+            updated_at: user.updated_at,
+        }),
+    ))
 }
