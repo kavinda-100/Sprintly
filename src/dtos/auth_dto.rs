@@ -5,25 +5,39 @@ use validator::Validate;
 
 #[derive(Debug, Deserialize, Validate)]
 pub struct RegisterUserDto {
-    #[validate(length(min = 1))]
+    #[validate(length(min = 1, message = "Name cannot be empty"))]
     pub name: String,
 
-    #[validate(email)]
+    #[validate(
+        email(message = "Invalid email format"),
+        length(min = 1, message = "Email cannot be empty")
+    )]
     pub email: String,
 
-    #[validate(length(min = 6, max = 12))]
+    #[validate(length(
+        min = 6,
+        max = 12,
+        message = "Password must be between 6 and 12 characters"
+    ))]
     pub password: String,
 
-    #[validate(length(min = 6, max = 12))]
+    #[validate(must_match(other = "password", message = "Passwords do not match"))]
     pub confirm_password: String,
 }
 
 #[derive(Debug, Deserialize, Validate)]
 pub struct LoginUserDto {
-    #[validate(email)]
+    #[validate(
+        email(message = "Invalid email format"),
+        length(min = 1, message = "Email cannot be empty")
+    )]
     pub email: String,
 
-    #[validate(length(min = 6, max = 12))]
+    #[validate(length(
+        min = 6,
+        max = 12,
+        message = "Password must be between 6 and 12 characters"
+    ))]
     pub password: String,
 }
 
