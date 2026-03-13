@@ -1,9 +1,14 @@
-use axum::{Json, extract::State, http::StatusCode};
+use axum::{
+    Json,
+    extract::{Path, State},
+    http::StatusCode,
+};
+use uuid::Uuid;
 use validator::Validate;
 
 use crate::{
     config::AppState,
-    dtos::workspace_dto::{CreateWorkspacePayload, WorkspaceResponse},
+    dtos::workspace_dto::{CreateWorkspacePayload, UpdateWorkspacePayload, WorkspaceResponse},
     middleware::auth::AuthUser,
     models::Workspace,
     utils::{api_error::ApiError, format_validation_errors, response::ApiResponse},
@@ -37,7 +42,7 @@ pub async fn create_workspace(
     .bind(user.id)
     .fetch_one(&state.db)
     .await
-    .map_err(|e| ApiError::InternalServerError(format!("Failed to create workspace: {}", e)))?;
+    .map_err(|_| ApiError::InternalServerError("Failed to create workspace".into()))?;
 
     // Placeholder implementation
     Ok(Json(ApiResponse::new(
@@ -73,7 +78,7 @@ pub async fn get_workspaces(
     .bind(user.id)
     .fetch_all(&state.db)
     .await
-    .map_err(|e| ApiError::InternalServerError(format!("Failed to retrieve workspaces: {}", e)))?;
+    .map_err(|_| ApiError::InternalServerError("Failed to retrieve workspaces".into()))?;
 
     // map the workspaces to the response DTOs
     let _workspace_responses: Vec<WorkspaceResponse> = _workspaces
@@ -93,5 +98,123 @@ pub async fn get_workspaces(
         StatusCode::OK,
         "Workspaces retrieved successfully",
         Some(_workspace_responses), // Return the list of workspaces
+    )))
+}
+
+/**
+ * Updates the name of an existing workspace that belongs to the authenticated user.
+ * Validates the input, checks if the workspace exists and belongs to the user, updates it in the database, and returns a JSON response with the updated workspace details.
+ * Route: PUT /api/v1/workspaces/{id}
+ */
+pub async fn update_workspace(
+    State(state): State<AppState>,
+    AuthUser(user): AuthUser,
+    Path(id): Path<Uuid>,
+    Json(payload): Json<UpdateWorkspacePayload>,
+) -> Result<Json<ApiResponse<WorkspaceResponse>>, ApiError> {
+    // logging the workspace update attempt with the email (but not the password)
+    tracing::info!(
+        "User {} is attempting to update workspace with id: {}",
+        user.email,
+        id
+    );
+
+    // Validate the input payload
+    payload.validate().map_err(|e| {
+        let error_messages = format_validation_errors(&e);
+        tracing::error!("Validation errors: {}", error_messages);
+        ApiError::BadRequest(error_messages)
+    })?;
+
+    // check if the workspace exists and belongs to the user
+    let existing_workspace =
+        sqlx::query_as::<_, Workspace>("SELECT * FROM workspaces WHERE id = $1 AND owner_id = $2")
+            .bind(id)
+            .bind(user.id)
+            .fetch_optional(&state.db)
+            .await
+            .map_err(|_| ApiError::InternalServerError("Failed to retrieve workspace".into()))?;
+
+    // if the workspace doesn't exist or doesn't belong to the user, return a 404 error
+    if existing_workspace.is_none() {
+        tracing::warn!("Workspace with id {} not found for user {}", id, user.email);
+        return Err(ApiError::NotFound("Workspace not found".into()));
+    }
+
+    // update the workspace in the database
+    let updated_workspace = sqlx::query_as::<_, Workspace>(
+        "UPDATE workspaces SET name = $1, updated_at = NOW() WHERE id = $2 AND owner_id = $3 RETURNING *",
+    )
+    .bind(&payload.name)
+    .bind(id)
+    .bind(user.id)
+    .fetch_one(&state.db)
+    .await
+    .map_err(|_| ApiError::InternalServerError("Failed to update workspace".into()))?;
+
+    // Placeholder implementation
+    Ok(Json(ApiResponse::new(
+        true,
+        StatusCode::OK,
+        "Workspace updated successfully",
+        Some(WorkspaceResponse {
+            id: updated_workspace.id,
+            name: updated_workspace.name,
+            owner_id: updated_workspace.owner_id,
+            created_at: updated_workspace.created_at,
+            updated_at: updated_workspace.updated_at,
+        }),
+    )))
+}
+
+/**
+ * Deletes an existing workspace that belongs to the authenticated user.
+ * Validates the input, checks if the workspace exists and belongs to the user, deletes it from the database, and returns a JSON response confirming the deletion.
+ * Route: DELETE /api/v1/workspaces/{id}
+ */
+pub async fn delete_workspace(
+    State(state): State<AppState>,
+    AuthUser(user): AuthUser,
+    Path(id): Path<Uuid>,
+) -> Result<Json<ApiResponse<()>>, ApiError> {
+    // logging the workspace update attempt with the email (but not the password)
+    tracing::info!(
+        "User {} is attempting to delete workspace with id: {}",
+        user.email,
+        id
+    );
+
+    // check if the workspace exists and belongs to the user
+    let existing_workspace =
+        sqlx::query_as::<_, Workspace>("SELECT * FROM workspaces WHERE id = $1 AND owner_id = $2")
+            .bind(id)
+            .bind(user.id)
+            .fetch_optional(&state.db)
+            .await
+            .map_err(|_| ApiError::InternalServerError("Failed to retrieve workspace".into()))?;
+
+    // if the workspace doesn't exist or doesn't belong to the user, return a 404 error
+    let existing_workspace = existing_workspace.ok_or_else(|| {
+        tracing::warn!("Workspace with id {} not found for user {}", id, user.email);
+        ApiError::NotFound("Workspace not found".into())
+    })?;
+
+    // delete the workspace from the database
+    sqlx::query("DELETE FROM workspaces WHERE id = $1 AND owner_id = $2")
+        .bind(id)
+        .bind(user.id)
+        .execute(&state.db)
+        .await
+        .map_err(|_| ApiError::InternalServerError("Failed to delete workspace".into()))?;
+
+    // Return a success response with no data
+    Ok(Json(ApiResponse::new(
+        true,
+        StatusCode::OK,
+        format!(
+            "Workspace named: {} deleted successfully",
+            existing_workspace.name
+        ),
+        None,
     )))
 }
