@@ -1,3 +1,10 @@
 {
-	"cSpell.words": ["dotenvy", "jsonwebtoken", "ossp", "reqwest", "Sprintly"]
+	"cSpell.words": [
+		"dotenvy",
+		"getrandom",
+		"jsonwebtoken",
+		"ossp",
+		"reqwest",
+		"Sprintly"
+	]
 }
