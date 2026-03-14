@@ -41,10 +41,13 @@ pub struct UpdateTaskPayload {
     pub task_priority: Option<TaskPriority>,
 
     pub due_date: Option<chrono::NaiveDateTime>,
+
+    pub position: Option<i32>,
 }
 
 #[derive(Debug, Deserialize)]
-// GET /projects/{id}/tasks?status=todo&priority=high
+#[allow(dead_code)]
+// GET /projects/{project_id}/tasks?status=todo&priority=high
 pub struct TaskQuery {
     pub status: Option<TaskStatus>,
     pub priority: Option<TaskPriority>,
