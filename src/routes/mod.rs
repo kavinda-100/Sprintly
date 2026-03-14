@@ -2,11 +2,13 @@ use axum::{Router, routing::get};
 use tower_http::services::fs::ServeDir;
 
 pub mod auth_routes;
+pub mod project_routes;
 pub mod workspace_routes;
 
 use crate::{
     config::AppState, controllers::root_controller::health_check,
-    routes::auth_routes::create_auth_routes, routes::workspace_routes::create_workspace_routes,
+    routes::auth_routes::create_auth_routes, routes::project_routes::create_project_routes,
+    routes::workspace_routes::create_workspace_routes,
 };
 
 /// Creates the main API router with all route groups
@@ -31,4 +33,5 @@ fn api_v1_routes() -> Router<AppState> {
     Router::new()
         .merge(create_auth_routes())
         .merge(create_workspace_routes())
+        .merge(create_project_routes())
 }
