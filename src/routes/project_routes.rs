@@ -14,5 +14,8 @@ use crate::{
 pub fn create_project_routes() -> Router<AppState> {
     Router::new()
         .route("/projects", post(create_project))
-        .route("/projects/{id}", put(update_project).delete(delete_project))
+        .route(
+            "/projects/{project_id}",
+            put(update_project).delete(delete_project),
+        )
 }

@@ -74,13 +74,13 @@ pub async fn create_project(
 pub async fn update_project(
     State(state): State<AppState>,
     AuthUser(user): AuthUser,
-    Path(id): Path<Uuid>, // project ID from the URL path
+    Path(project_id): Path<Uuid>,
     Json(payload): Json<UpdateProjectPayload>,
 ) -> Result<Json<ApiResponse<ProjectResponse>>, ApiError> {
     // logging the project update attempt with the email (but not the password)
     tracing::info!(
         "Attempting to update project with id: {} by user: {}",
-        id,
+        project_id,
         user.email
     );
 
@@ -93,14 +93,14 @@ pub async fn update_project(
 
     // Check if the project exists
     let existing_project = sqlx::query_as::<_, Project>("SELECT * FROM projects WHERE id = $1")
-        .bind(id)
+        .bind(project_id)
         .fetch_optional(&state.db)
         .await
         .map_err(|_| ApiError::InternalServerError("Failed to query project".into()))?;
 
     // If the project does not exist, return a 404 error
     if existing_project.is_none() {
-        tracing::warn!("Project with id: {} not found", id);
+        tracing::warn!("Project with id: {} not found", project_id);
         return Err(ApiError::NotFound("Project not found".into()));
     }
 
@@ -112,7 +112,7 @@ pub async fn update_project(
     )
     .bind(&payload.name)
     .bind(&payload.description)
-    .bind(id)
+    .bind(project_id)
     .fetch_one(&state.db)
     .await
     .map_err(|_| ApiError::InternalServerError("Failed to update project".into()))?;
@@ -140,31 +140,31 @@ pub async fn update_project(
 pub async fn delete_project(
     State(state): State<AppState>,
     AuthUser(user): AuthUser,
-    Path(id): Path<Uuid>, // project ID from the URL path
+    Path(project_id): Path<Uuid>,
 ) -> Result<Json<ApiResponse<()>>, ApiError> {
     // logging the project deletion attempt with the email (but not the password)
     tracing::info!(
         "Attempting to delete project with id: {} by user: {}",
-        id,
+        project_id,
         user.email
     );
 
     // Check if the project exists
     let existing_project = sqlx::query_as::<_, Project>("SELECT * FROM projects WHERE id = $1")
-        .bind(id)
+        .bind(project_id)
         .fetch_optional(&state.db)
         .await
         .map_err(|_| ApiError::InternalServerError("Failed to query project".into()))?;
 
     // If the project does not exist, return a 404 error
     if existing_project.is_none() {
-        tracing::warn!("Project with id: {} not found", id);
+        tracing::warn!("Project with id: {} not found", project_id);
         return Err(ApiError::NotFound("Project not found".into()));
     }
 
     // Delete the project from the database
     sqlx::query("DELETE FROM projects WHERE id = $1")
-        .bind(id)
+        .bind(project_id)
         .execute(&state.db)
         .await
         .map_err(|_| ApiError::InternalServerError("Failed to delete project".into()))?;

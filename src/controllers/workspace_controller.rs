@@ -8,9 +8,10 @@ use validator::Validate;
 
 use crate::{
     config::AppState,
+    dtos::project_dto::ProjectResponse,
     dtos::workspace_dto::{CreateWorkspacePayload, UpdateWorkspacePayload, WorkspaceResponse},
     middleware::auth::AuthUser,
-    models::Workspace,
+    models::{Project, Workspace},
     utils::{api_error::ApiError, format_validation_errors, response::ApiResponse},
 };
 
@@ -216,5 +217,72 @@ pub async fn delete_workspace(
             existing_workspace.name
         ),
         None,
+    )))
+}
+
+/**
+ * Retrieves a list of projects that belong to a specific workspace for the authenticated user.
+ * Validates the workspace ID, checks if the workspace exists and belongs to the user, retrieves the projects from the database, and returns a JSON response with the list of projects.
+ * Route: GET /api/v1/workspaces/{workspace_id}/projects
+ */
+pub async fn get_workspace_projects(
+    State(state): State<AppState>,
+    AuthUser(user): AuthUser,
+    Path(workspace_id): Path<Uuid>,
+) -> Result<Json<ApiResponse<Vec<ProjectResponse>>>, ApiError> {
+    // logging the project retrieval attempt
+    tracing::info!(
+        "User {} is attempting to retrieve projects for workspace {}",
+        user.email,
+        workspace_id
+    );
+
+    // check if the workspace exists and belongs to the user
+    let existing_workspace =
+        sqlx::query_as::<_, Workspace>("SELECT * FROM workspaces WHERE id = $1 AND owner_id = $2")
+            .bind(workspace_id)
+            .bind(user.id)
+            .fetch_optional(&state.db)
+            .await
+            .map_err(|_| ApiError::InternalServerError("Failed to retrieve workspace".into()))?;
+
+    // if the workspace doesn't exist or doesn't belong to the user, return a 404 error
+    if existing_workspace.is_none() {
+        tracing::warn!(
+            "Workspace with id {} not found for user {}",
+            workspace_id,
+            user.email
+        );
+        return Err(ApiError::NotFound("Workspace not found".into()));
+    }
+
+    // get the projects for the workspace from the database
+    let projects = sqlx::query_as::<_, Project>(
+        "SELECT * FROM projects WHERE workspace_id = $1 ORDER BY created_at DESC",
+    )
+    .bind(workspace_id)
+    .fetch_all(&state.db)
+    .await
+    .map_err(|_| ApiError::InternalServerError("Failed to retrieve projects".into()))?;
+
+    // map the projects to the response DTOs
+    let project_responses: Vec<ProjectResponse> = projects
+        .into_iter()
+        .map(|p| ProjectResponse {
+            id: p.id,
+            workspace_id: p.workspace_id,
+            name: p.name,
+            description: p.description,
+            created_at: p.created_at,
+            updated_at: p.updated_at,
+        })
+        .collect();
+
+    // Return the list of projects in the response
+    Ok(Json(ApiResponse::new(
+        true,
+        StatusCode::OK,
+        "Projects retrieved successfully",
+        Some(project_responses),
     )))
 }

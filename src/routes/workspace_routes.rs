@@ -1,12 +1,13 @@
 use axum::{
     Router,
-    routing::{post, put},
+    routing::{get, post, put},
 };
 
 use crate::{
     config::AppState,
     controllers::workspace_controller::{
-        create_workspace, delete_workspace, get_workspaces, update_workspace,
+        create_workspace, delete_workspace, get_workspace_projects, get_workspaces,
+        update_workspace,
     },
 };
 
@@ -19,5 +20,9 @@ pub fn create_workspace_routes() -> Router<AppState> {
         .route(
             "/workspaces/{id}",
             put(update_workspace).delete(delete_workspace),
+        )
+        .route(
+            "/workspaces/{workspace_id}/projects",
+            get(get_workspace_projects),
         )
 }
