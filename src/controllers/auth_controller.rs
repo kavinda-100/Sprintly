@@ -3,7 +3,7 @@ use tower_cookies::{Cookie, Cookies, cookie::SameSite};
 use validator::Validate;
 
 use crate::{
-    config::AppState,
+    config::{AppState, env::DevMode},
     dtos::auth_dto::{AuthUserResponse, LoginUserDto, RegisterUserDto},
     middleware::auth::AuthUser,
     models::User,
@@ -78,7 +78,7 @@ pub async fn register_user(
         Cookie::build(("token", token))
             .path("/")
             .http_only(true)
-            .secure(state.env_config.dev_mode != "development")
+            .secure(state.env_config.dev_mode != DevMode::Development)
             .same_site(SameSite::Lax)
             .build(),
     );
@@ -168,7 +168,7 @@ pub async fn login_user(
         Cookie::build(("token", token))
             .path("/")
             .http_only(true)
-            .secure(state.env_config.dev_mode != "development")
+            .secure(state.env_config.dev_mode != DevMode::Development)
             .same_site(SameSite::Lax)
             .build(),
     );
