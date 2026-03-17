@@ -17,6 +17,8 @@ use crate::{
 /**
  * Handler for creating a new task within a project. Validates the input payload, checks user authentication, and inserts the new task into the database. Returns the created task in the response if successful.
  * Path: POST /api/v1/tasks
+ * access: requires authentication
+ * access: any authenticated user can create a task within a project they have access to.
  */
 pub async fn create_task(
     State(state): State<AppState>,
@@ -79,6 +81,8 @@ pub async fn create_task(
 /**
  * Handler for updating an existing task. Validates the input payload, checks user authentication, and updates the task in the database if it exists and belongs to the user. Returns the updated task in the response if successful.
  * Path: PUT /api/v1/tasks/{task_id}
+ * access: requires authentication
+ * access: any authenticated user can update a task they own.
  */
 pub async fn update_task(
     State(state): State<AppState>,
@@ -155,6 +159,8 @@ pub async fn update_task(
 /**
  * Handler for deleting an existing task. Checks user authentication and deletes the task from the database if it exists and belongs to the user. Returns a success message in the response if successful.
  * Path: DELETE /api/v1/tasks/{task_id}
+ * access: requires authentication
+ * access: any authenticated user can delete a task they own.
  */
 pub async fn delete_task(
     State(state): State<AppState>,

@@ -98,6 +98,24 @@ const endpoints = [
 			'Fetch tasks for a specific project for the authenticated user',
 		status: 'active',
 	},
+	{
+		endpoint: '/api/v1/tasks',
+		method: 'POST',
+		description: 'Create a new task for project.',
+		status: 'active',
+	},
+	{
+		endpoint: '/api/v1/tasks/{task_id}',
+		method: 'PUT',
+		description: 'Update a specific task for the authenticated user',
+		status: 'active',
+	},
+	{
+		endpoint: '/api/v1/tasks/{task_id}',
+		method: 'DELETE',
+		description: 'Delete a specific task for the authenticated user',
+		status: 'active',
+	},
 ];
 
 // Function to get method badge class
