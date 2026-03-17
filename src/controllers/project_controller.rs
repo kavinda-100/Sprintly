@@ -20,6 +20,8 @@ use crate::{
 /**
  * Controller function to create a new project within a workspace. Validates the input payload, checks user authentication, and interacts with the database to persist the new project. Returns a structured API response with the created project details or appropriate error messages.
  * Path: POST /api/v1/projects
+ * access: requires authentication
+ * access: any authenticated user can create a project within a workspace.
  */
 pub async fn create_project(
     State(state): State<AppState>,
@@ -71,8 +73,60 @@ pub async fn create_project(
 }
 
 /**
+ * Controller function to fetch a project by its ID. Checks user authentication, verifies project existence, and retrieves the project details from the database. Returns a structured API response with the project details or appropriate error messages.
+ * Path: GET /api/v1/projects/{project_id}
+ * access: requires authentication
+ * access: any authenticated user can fetch a project they have access to.
+ */
+pub async fn get_project_by_id(
+    State(state): State<AppState>,
+    AuthUser(user): AuthUser,
+    Path(project_id): Path<Uuid>,
+) -> Result<Json<ApiResponse<ProjectResponse>>, ApiError> {
+    // logging the project retrieval attempt with the email (but not the password)
+    tracing::info!(
+        "Attempting to fetch project with id: {} by user: {}",
+        project_id,
+        user.email
+    );
+
+    // Check if the project exists
+    let existing_project = sqlx::query_as::<_, Project>("SELECT * FROM projects WHERE id = $1")
+        .bind(project_id)
+        .fetch_optional(&state.db)
+        .await
+        .map_err(|_| ApiError::InternalServerError("Failed to query project".into()))?;
+
+    // If the project does not exist, return a 404 error
+    let existing_project = match existing_project {
+        Some(project) => project,
+        None => {
+            tracing::warn!("Project with id: {} not found", project_id);
+            return Err(ApiError::NotFound("Project not found".into()));
+        }
+    };
+
+    // return the project in the response
+    Ok(Json(ApiResponse::new(
+        true,
+        StatusCode::OK,
+        "Project fetched successfully",
+        Some(ProjectResponse {
+            id: existing_project.id,
+            workspace_id: existing_project.workspace_id,
+            name: existing_project.name,
+            description: existing_project.description,
+            created_at: existing_project.created_at,
+            updated_at: existing_project.updated_at,
+        }),
+    )))
+}
+
+/**
  * Controller function to update an existing project. Validates the input payload, checks user authentication, verifies project existence, and updates the project details in the database. Returns a structured API response with the updated project details or appropriate error messages.
  * Path: PUT /api/v1/projects/{id}
+ * access: requires authentication
+ * access: only the owner of the project can update it.
  */
 pub async fn update_project(
     State(state): State<AppState>,
@@ -139,6 +193,8 @@ pub async fn update_project(
 /**
  * Controller function to delete an existing project. Checks user authentication, verifies project existence, and deletes the project from the database. Returns a structured API response indicating success or appropriate error messages.
  * Path: DELETE /api/v1/projects/{id}
+ * access: requires authentication
+ * access: only the owner of the project can delete it.
  */
 pub async fn delete_project(
     State(state): State<AppState>,
@@ -184,6 +240,8 @@ pub async fn delete_project(
 /**
  * Controller function to fetch all tasks for a specific project. Checks user authentication, verifies project existence, and retrieves all tasks associated with the project from the database. Returns a structured API response with a list of tasks or appropriate error messages.
  * Path: GET /api/v1/projects/{project_id}/tasks
+ * access: requires authentication
+ * access: any authenticated user can fetch tasks for a project they have access to.
  */
 pub async fn get_all_tasks_for_project(
     State(state): State<AppState>,
