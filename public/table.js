@@ -31,6 +31,42 @@ const endpoints = [
 		description: 'Login with Google OAuth',
 		status: 'active',
 	},
+	{
+		endpoint: '/api/v1/auth/workspaces',
+		method: 'POST',
+		description: 'Create a new workspace',
+		status: 'active',
+	},
+	{
+		endpoint: '/api/v1/auth/workspaces',
+		method: 'GET',
+		description: 'Fetch all workspaces for the authenticated user',
+		status: 'active',
+	},
+	{
+		endpoint: '/api/v1/auth/workspaces/{workspace_id}',
+		method: 'GET',
+		description: 'Fetch a specific workspace for the authenticated user',
+		status: 'active',
+	},
+	{
+		endpoint: '/api/v1/auth/workspaces/{workspace_id}',
+		method: 'GET',
+		description: 'Fetch a specific workspace for the authenticated user',
+		status: 'active',
+	},
+	{
+		endpoint: '/api/v1/auth/workspaces/{workspace_id}',
+		method: 'PUT',
+		description: 'Update a specific workspace for the authenticated user',
+		status: 'active',
+	},
+	{
+		endpoint: '/api/v1/auth/workspaces/{workspace_id}',
+		method: 'DELETE',
+		description: 'Delete a specific workspace for the authenticated user',
+		status: 'active',
+	},
 ];
 
 // Function to get method badge class
