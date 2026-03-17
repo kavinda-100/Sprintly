@@ -185,7 +185,7 @@ pub async fn delete_project(
  * Controller function to fetch all tasks for a specific project. Checks user authentication, verifies project existence, and retrieves all tasks associated with the project from the database. Returns a structured API response with a list of tasks or appropriate error messages.
  * Path: GET /api/v1/projects/{project_id}/tasks
  */
-pub async fn get_all_task(
+pub async fn get_all_tasks_for_project(
     State(state): State<AppState>,
     AuthUser(user): AuthUser,
     Path(project_id): Path<Uuid>,

@@ -1,11 +1,13 @@
 use axum::{
     Router,
-    routing::{post, put},
+    routing::{get, post, put},
 };
 
 use crate::{
     config::AppState,
-    controllers::project_controller::{create_project, delete_project, update_project},
+    controllers::project_controller::{
+        create_project, delete_project, get_all_tasks_for_project, update_project,
+    },
 };
 
 // Project routes module
@@ -17,5 +19,9 @@ pub fn create_project_routes() -> Router<AppState> {
         .route(
             "/projects/{project_id}",
             put(update_project).delete(delete_project),
+        )
+        .route(
+            "/projects/{project_id}/tasks",
+            get(get_all_tasks_for_project),
         )
 }
