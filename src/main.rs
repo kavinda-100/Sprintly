@@ -13,6 +13,7 @@ mod middleware;
 mod models;
 mod routes;
 mod services;
+mod tests;
 mod utils;
 
 use crate::{
@@ -52,8 +53,7 @@ async fn main() {
     };
 
     // Build the application with all routes
-    let app = create_routes()
-        .with_state(app_state)
+    let app = create_routes(app_state)
         // Add logging middleware
         .layer(trace)
         // Add cookie management middleware

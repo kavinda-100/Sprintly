@@ -37,11 +37,6 @@ pub async fn register_user(
         ApiError::BadRequest(error_messages)
     })?;
 
-    // comparing password and confirm_password
-    if payload.password != payload.confirm_password {
-        return Err(ApiError::BadRequest("Passwords do not match".into()));
-    }
-
     // Check if the email is already registered
     let existing_user = sqlx::query_as::<_, User>("SELECT * FROM users WHERE email = $1")
         .bind(&payload.email)
@@ -137,7 +132,7 @@ pub async fn login_user(
 
     // check if the user has a google_id, if so, they should not be able to login with email and password
     if user.google_id.is_some() {
-        return Err(ApiError::Unauthorized("Please login with google".into()));
+        return Err(ApiError::Conflict("Please login with google".into()));
     }
 
     // check if the user has a password_hash, if not, they should not be able to login with email and password
