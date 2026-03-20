@@ -46,11 +46,12 @@ pub struct UpdateTaskPayload {
 }
 
 #[derive(Debug, Deserialize)]
-#[allow(dead_code)]
-// GET /projects/{project_id}/tasks?status=todo&priority=high
+// GET /projects/{project_id}/tasks?status=todo&priority=high&page=1&page_size=20
 pub struct TaskQuery {
     pub status: Option<TaskStatus>,
     pub priority: Option<TaskPriority>,
+    pub page: Option<i32>,
+    pub page_size: Option<i32>,
 }
 
 #[derive(Debug, Serialize)]

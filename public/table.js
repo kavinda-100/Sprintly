@@ -1,120 +1,155 @@
 // Endpoints data
 const endpoints = [
 	{
-		endpoint: '/health',
-		method: 'GET',
-		description: 'Health check endpoint',
-		status: 'active',
+		endpoints: [
+			{
+				endpoint: '/health',
+				method: 'GET',
+				description: 'Health check endpoint',
+				status: 'active',
+			},
+		],
 	},
 	{
-		endpoint: '/api/v1/auth/register',
-		method: 'POST',
-		description: 'Register a new user account',
-		status: 'active',
+		name: 'Authentication',
+		endpoints: [
+			{
+				endpoint: '/api/v1/auth/register',
+				method: 'POST',
+				description: 'Register a new user account',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/auth/login',
+				method: 'POST',
+				description: 'Login with email and password',
+				status: 'active',
+			},
+			,
+			{
+				endpoint: '/api/v1/auth/logout',
+				method: 'POST',
+				description: 'Logout the current user',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/auth/google',
+				method: 'GET',
+				description: 'Login with Google OAuth',
+				status: 'active',
+			},
+		],
 	},
 	{
-		endpoint: '/api/v1/auth/login',
-		method: 'POST',
-		description: 'Login with email and password',
-		status: 'active',
-	},
-	,
-	{
-		endpoint: '/api/v1/auth/logout',
-		method: 'POST',
-		description: 'Logout the current user',
-		status: 'active',
-	},
-	{
-		endpoint: '/api/v1/auth/google',
-		method: 'GET',
-		description: 'Login with Google OAuth',
-		status: 'active',
-	},
-	{
-		endpoint: '/api/v1/workspaces',
-		method: 'POST',
-		description: 'Create a new workspace',
-		status: 'active',
-	},
-	{
-		endpoint: '/api/v1/workspaces',
-		method: 'GET',
-		description: 'Fetch all workspaces for the authenticated user',
-		status: 'active',
-	},
-	{
-		endpoint: '/api/v1/workspaces/{workspace_id}',
-		method: 'GET',
-		description: 'Fetch a specific workspace for the authenticated user',
-		status: 'active',
-	},
-	{
-		endpoint: '/api/v1/workspaces/{workspace_id}',
-		method: 'GET',
-		description: 'Fetch a specific workspace for the authenticated user',
-		status: 'active',
-	},
-	{
-		endpoint: '/api/v1/workspaces/{workspace_id}',
-		method: 'PUT',
-		description: 'Update a specific workspace for the authenticated user',
-		status: 'active',
+		name: 'Workspaces',
+		endpoints: [
+			{
+				endpoint: '/api/v1/workspaces',
+				method: 'POST',
+				description: 'Create a new workspace',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/workspaces',
+				method: 'GET',
+				description: 'Fetch all workspaces for the authenticated user',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/workspaces/{workspace_id}',
+				method: 'GET',
+				description:
+					'Fetch a specific workspace for the authenticated user',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/workspaces/{workspace_id}',
+				method: 'PUT',
+				description:
+					'Update a specific workspace for the authenticated user',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/workspaces/{workspace_id}',
+				method: 'DELETE',
+				description:
+					'Delete a specific workspace for the authenticated user',
+				status: 'active',
+			},
+			{
+				endpoint:
+					'/api/v1/workspaces/{workspace_id}/projects?page=1&page_size=20',
+				method: 'GET',
+				description:
+					'Fetch projects for a specific workspace for the authenticated user',
+				status: 'active',
+			},
+		],
 	},
 	{
-		endpoint: '/api/v1/workspaces/{workspace_id}',
-		method: 'DELETE',
-		description: 'Delete a specific workspace for the authenticated user',
-		status: 'active',
+		name: 'Projects',
+		endpoints: [
+			{
+				endpoint: '/api/v1/projects/',
+				method: 'POST',
+				description: 'Create a new project for the specific workspace.',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/projects/{project_id}',
+				method: 'GET',
+				description:
+					'Fetch a specific project for the authenticated user',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/projects/{project_id}',
+				method: 'PUT',
+				description:
+					'Update a specific project for the authenticated user',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/projects/{project_id}',
+				method: 'DELETE',
+				description:
+					'Delete a specific project for the authenticated user',
+				status: 'active',
+			},
+			{
+				endpoint:
+					'/api/v1/projects/{project_id}/tasks?status=todo&priority=high&page=1&page_size=20',
+				method: 'GET',
+				description:
+					'Fetch tasks for a specific project for the authenticated user',
+				status: 'active',
+			},
+		],
 	},
 	{
-		endpoint: '/api/v1/projects/',
-		method: 'POST',
-		description: 'Create a new project for the authenticated user',
-		status: 'active',
-	},
-	{
-		endpoint: '/api/v1/projects/{project_id}',
-		method: 'GET',
-		description: 'Fetch a specific project for the authenticated user',
-		status: 'active',
-	},
-	{
-		endpoint: '/api/v1/projects/{project_id}',
-		method: 'PUT',
-		description: 'Update a specific project for the authenticated user',
-		status: 'active',
-	},
-	{
-		endpoint: '/api/v1/projects/{project_id}',
-		method: 'DELETE',
-		description: 'Delete a specific project for the authenticated user',
-		status: 'active',
-	},
-	{
-		endpoint: '/api/v1/projects/{project_id}/tasks',
-		method: 'GET',
-		description:
-			'Fetch tasks for a specific project for the authenticated user',
-		status: 'active',
-	},
-	{
-		endpoint: '/api/v1/tasks',
-		method: 'POST',
-		description: 'Create a new task for project.',
-		status: 'active',
-	},
-	{
-		endpoint: '/api/v1/tasks/{task_id}',
-		method: 'PUT',
-		description: 'Update a specific task for the authenticated user',
-		status: 'active',
-	},
-	{
-		endpoint: '/api/v1/tasks/{task_id}',
-		method: 'DELETE',
-		description: 'Delete a specific task for the authenticated user',
-		status: 'active',
+		name: 'Tasks',
+		endpoints: [
+			{
+				endpoint: '/api/v1/tasks',
+				method: 'POST',
+				description: 'Create a new task for project.',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/tasks/{task_id}',
+				method: 'PUT',
+				description:
+					'Update a specific task for the authenticated user',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/tasks/{task_id}',
+				method: 'DELETE',
+				description:
+					'Delete a specific task for the authenticated user',
+				status: 'active',
+			},
+		],
 	},
 ];
 

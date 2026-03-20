@@ -1,6 +1,6 @@
 use axum::{
     Json,
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::StatusCode,
 };
 use uuid::Uuid;
@@ -8,8 +8,13 @@ use validator::Validate;
 
 use crate::{
     config::AppState,
-    dtos::project_dto::ProjectResponse,
-    dtos::workspace_dto::{CreateWorkspacePayload, UpdateWorkspacePayload, WorkspaceResponse},
+    dtos::{
+        project_dto::ProjectResponse,
+        workspace_dto::{
+            CreateWorkspacePayload, UpdateWorkspacePayload, WorkspaceProjectQuery,
+            WorkspaceResponse,
+        },
+    },
     middleware::auth::AuthUser,
     models::{Project, Workspace},
     utils::{api_error::ApiError, format_validation_errors, response::ApiResponse},
@@ -289,7 +294,7 @@ pub async fn delete_workspace(
 /**
  * Retrieves a list of projects that belong to a specific id.
  * Validates the workspace ID, checks if the workspace exists and belongs to the user, retrieves the projects from the database, and returns a JSON response with the list of projects.
- * Route: GET /api/v1/workspaces/{workspace_id}/projects
+ * Route: GET /api/v1/workspaces/{workspace_id}/projects?page=1&page_size=20
  * access: requires authentication
  * access: any authenticated user can attempt to retrieve projects for a workspace.
  */
@@ -297,6 +302,7 @@ pub async fn get_workspace_projects(
     State(state): State<AppState>,
     AuthUser(user): AuthUser,
     Path(workspace_id): Path<Uuid>,
+    Query(_query): Query<WorkspaceProjectQuery>,
 ) -> Result<Json<ApiResponse<Vec<ProjectResponse>>>, ApiError> {
     // logging the project retrieval attempt
     tracing::info!(
@@ -304,6 +310,10 @@ pub async fn get_workspace_projects(
         user.email,
         workspace_id
     );
+
+    // check the query parameters has values or assign default values
+    let page = _query.page.unwrap_or(1);
+    let page_size = _query.page_size.unwrap_or(20);
 
     // check if the workspace exists and belongs to the user
     let existing_workspace =
@@ -325,9 +335,11 @@ pub async fn get_workspace_projects(
 
     // get the projects for the workspace from the database
     let projects = sqlx::query_as::<_, Project>(
-        "SELECT * FROM projects WHERE workspace_id = $1 ORDER BY created_at DESC",
+        "SELECT * FROM projects WHERE workspace_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3",
     )
     .bind(workspace_id)
+    .bind(page_size)
+    .bind((page - 1) * page_size)
     .fetch_all(&state.db)
     .await
     .map_err(|_| ApiError::InternalServerError("Failed to retrieve projects".into()))?;

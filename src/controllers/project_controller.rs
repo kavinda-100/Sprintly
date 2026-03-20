@@ -1,6 +1,6 @@
 use axum::{
     Json,
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::StatusCode,
 };
 use uuid::Uuid;
@@ -10,10 +10,13 @@ use crate::{
     config::AppState,
     dtos::{
         project_dto::{CreateProjectPayload, ProjectResponse, UpdateProjectPayload},
-        task_dto::TaskResponse,
+        task_dto::{TaskQuery, TaskResponse},
     },
     middleware::auth::AuthUser,
-    models::{Project, Task},
+    models::{
+        Project, Task,
+        task_enum::{TaskPriority, TaskStatus},
+    },
     utils::{api_error::ApiError, format_validation_errors, response::ApiResponse},
 };
 
@@ -239,7 +242,7 @@ pub async fn delete_project(
 
 /**
  * Controller function to fetch all tasks for a specific project. Checks user authentication, verifies project existence, and retrieves all tasks associated with the project from the database. Returns a structured API response with a list of tasks or appropriate error messages.
- * Path: GET /api/v1/projects/{project_id}/tasks
+ * Path: GET /projects/{project_id}/tasks?status=todo&priority=high&page=1&page_size=20
  * access: requires authentication
  * access: any authenticated user can fetch tasks for a project they have access to.
  */
@@ -247,6 +250,7 @@ pub async fn get_all_tasks_for_project(
     State(state): State<AppState>,
     AuthUser(user): AuthUser,
     Path(project_id): Path<Uuid>,
+    Query(_query): Query<TaskQuery>,
 ) -> Result<Json<ApiResponse<Vec<TaskResponse>>>, ApiError> {
     // logging the task retrieval attempt with the email (but not the password)
     tracing::info!(
@@ -254,6 +258,12 @@ pub async fn get_all_tasks_for_project(
         project_id,
         user.email
     );
+
+    // check the query parameters has values or assign default values
+    let status_filter = _query.status.unwrap_or(TaskStatus::Todo);
+    let priority_filter = _query.priority.unwrap_or(TaskPriority::Medium);
+    let page = _query.page.unwrap_or(1);
+    let page_size = _query.page_size.unwrap_or(20);
 
     // Check if the project exists
     let existing_project = sqlx::query_as::<_, Project>("SELECT * FROM projects WHERE id = $1")
@@ -269,11 +279,23 @@ pub async fn get_all_tasks_for_project(
     }
 
     // Fetch all tasks for the project
-    let tasks = sqlx::query_as::<_, Task>("SELECT * FROM tasks WHERE project_id = $1")
-        .bind(project_id)
-        .fetch_all(&state.db)
-        .await
-        .map_err(|_| ApiError::InternalServerError("Failed to query tasks".into()))?;
+    let tasks = sqlx::query_as::<_, Task>(
+        "
+        SELECT * FROM tasks WHERE project_id = $1
+        AND task_status = $2
+        AND task_priority = $3
+        ORDER BY created_at DESC
+        LIMIT $4 OFFSET $5
+    ",
+    )
+    .bind(project_id)
+    .bind(status_filter)
+    .bind(priority_filter)
+    .bind(page_size)
+    .bind((page - 1) * page_size)
+    .fetch_all(&state.db)
+    .await
+    .map_err(|_| ApiError::InternalServerError("Failed to query tasks".into()))?;
 
     // Convert tasks to TaskResponse
     let task_responses: Vec<TaskResponse> = tasks
