@@ -6,7 +6,6 @@ use axum::{
 };
 
 use serde_json::Value;
-use tower::util::ServiceExt;
 
 #[tokio::test]
 async fn test_health_check() {
