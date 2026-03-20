@@ -4,8 +4,10 @@ use tower::ServiceExt;
 use tower_cookies::CookieManagerLayer;
 use uuid::Uuid;
 
-pub mod auth_test;
-pub mod health_test;
+#[cfg(test)]
+mod auth_test;
+#[cfg(test)]
+mod health_test;
 
 use crate::{
     config::{AppState, env::EnvConfig},
