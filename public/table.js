@@ -25,7 +25,6 @@ const endpoints = [
 				description: 'Login with email and password',
 				status: 'active',
 			},
-			,
 			{
 				endpoint: '/api/v1/auth/logout',
 				method: 'POST',
@@ -36,7 +35,7 @@ const endpoints = [
 				endpoint: '/api/v1/auth/google',
 				method: 'GET',
 				description: 'Login with Google OAuth',
-				status: 'active',
+				status: 'inactive',
 			},
 		],
 	},
@@ -172,6 +171,19 @@ function getStatusClass(status) {
 	return statusLower === 'active' ? 'active' : 'inactive';
 }
 
+// Function to get subtle background color for each group
+function getGroupColor(groupName) {
+	const groupLower = (groupName || 'General').toLowerCase();
+	const colorMap = {
+		general: '#f9fafb',
+		authentication: '#f3e8ff',
+		workspaces: '#ecfdf5',
+		projects: '#eff6ff',
+		tasks: '#fffbeb',
+	};
+	return colorMap[groupLower] || '#f9fafb';
+}
+
 // Function to render table rows
 function renderTable() {
 	const tbody = document.querySelector('.endpoints-table tbody');
@@ -184,35 +196,48 @@ function renderTable() {
 	// Clear existing rows
 	tbody.innerHTML = '';
 
-	// Loop through endpoints and create rows
-	endpoints.forEach((item) => {
-		const row = document.createElement('tr');
+	// Loop through grouped endpoints and create rows
+	endpoints.forEach((group) => {
+		const groupName = group.name || 'General';
+		const groupEndpoints = Array.isArray(group.endpoints)
+			? group.endpoints
+			: [];
 
-		// Create cells
-		const endpointCell = document.createElement('td');
-		endpointCell.innerHTML = `<code>${item.endpoint}</code>`;
+		if (groupEndpoints.length === 0) {
+			return;
+		}
 
-		const methodCell = document.createElement('td');
-		const methodClass = getMethodClass(item.method);
-		methodCell.innerHTML = `<span class="method-badge ${methodClass}">${item.method.toUpperCase()}</span>`;
+		groupEndpoints.forEach((item) => {
+			const row = document.createElement('tr');
+			row.style.backgroundColor = getGroupColor(groupName);
 
-		const descriptionCell = document.createElement('td');
-		descriptionCell.textContent = item.description;
+			const groupCell = document.createElement('td');
+			groupCell.textContent = groupName;
+			row.appendChild(groupCell);
 
-		const statusCell = document.createElement('td');
-		const statusClass = getStatusClass(item.status);
-		const statusText =
-			item.status.charAt(0).toUpperCase() + item.status.slice(1);
-		statusCell.innerHTML = `<span class="status-badge ${statusClass}">${statusText}</span>`;
+			const endpointCell = document.createElement('td');
+			endpointCell.innerHTML = `<code>${item.endpoint}</code>`;
 
-		// Append cells to row
-		row.appendChild(endpointCell);
-		row.appendChild(methodCell);
-		row.appendChild(descriptionCell);
-		row.appendChild(statusCell);
+			const methodCell = document.createElement('td');
+			const methodClass = getMethodClass(item.method);
+			methodCell.innerHTML = `<span class="method-badge ${methodClass}">${item.method.toUpperCase()}</span>`;
 
-		// Append row to tbody
-		tbody.appendChild(row);
+			const descriptionCell = document.createElement('td');
+			descriptionCell.textContent = item.description;
+
+			const statusCell = document.createElement('td');
+			const statusClass = getStatusClass(item.status);
+			const statusText =
+				item.status.charAt(0).toUpperCase() + item.status.slice(1);
+			statusCell.innerHTML = `<span class="status-badge ${statusClass}">${statusText}</span>`;
+
+			row.appendChild(endpointCell);
+			row.appendChild(methodCell);
+			row.appendChild(descriptionCell);
+			row.appendChild(statusCell);
+
+			tbody.appendChild(row);
+		});
 	});
 }
 
