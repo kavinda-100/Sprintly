@@ -132,7 +132,7 @@ pub async fn login_user(
 
     // check if the user has a google_id, if so, they should not be able to login with email and password
     if user.google_id.is_some() {
-        return Err(ApiError::Unauthorized("Please login with google".into()));
+        return Err(ApiError::Conflict("Please login with google".into()));
     }
 
     // check if the user has a password_hash, if not, they should not be able to login with email and password

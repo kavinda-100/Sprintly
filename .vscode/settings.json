@@ -6,6 +6,7 @@
 		"oneshot",
 		"ossp",
 		"reqwest",
-		"Sprintly"
+		"Sprintly",
+		"wrongpassword"
 	]
 }

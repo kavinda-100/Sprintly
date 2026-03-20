@@ -14,12 +14,12 @@ use uuid::Uuid;
  * This function is a helper to send a request to create a user.
  */
 #[allow(dead_code)]
-async fn create_user(app: axum::Router, email: &str) {
+async fn create_user(app: axum::Router, email: &str, password: Option<&str>) {
     let request_body = serde_json::json!({
         "name": "Test User",
         "email": email,
-        "password": "password123",
-        "confirm_password": "password123"
+        "password": password.clone().unwrap_or_else(|| "password123".into()),
+        "confirm_password": password.unwrap_or_else(|| "password123".into())
     });
 
     let request = Request::builder()
@@ -125,7 +125,7 @@ async fn test_register_user_email_already_registered() {
     let email = "test@conflict2.com";
 
     // Create a user with the email to set up the conflict scenario
-    create_user(app.clone(), email).await;
+    create_user(app.clone(), email, None).await;
 
     // let unique_email = format!("test+{}@example.com", Uuid::new_v4());
     let request_body = serde_json::json!({
@@ -157,4 +157,127 @@ async fn test_register_user_email_already_registered() {
     assert_eq!(body_json["success"], false);
     assert_eq!(body_json["status_code"], 409);
     assert_eq!(body_json["message"], "User is already registered");
+}
+
+// ====================================== tests for user login ==================================================
+
+/**
+ * This test verify the user login process with valid credentials.
+ */
+#[tokio::test]
+async fn test_login_user() {
+    let app = before_each_test().await;
+
+    let email = "test@login.com";
+    let password = "password123";
+
+    // Create a user with the email and password
+    create_user(app.clone(), email, Some(password)).await;
+
+    let request_body = serde_json::json!({
+        "email": email,
+        "password": password
+    });
+
+    let request = Request::builder()
+        .method("POST")
+        .uri("/api/v1/auth/login")
+        .header("Content-Type", "application/json")
+        .body(Body::from(request_body.to_string()))
+        .unwrap();
+
+    let response = send_request(app, request).await;
+    let status = response.status();
+
+    // Convert the response body string
+    let body_string = convert_response_to_string(response).await;
+
+    // Deserialize the response body into a JSON value
+    let body_json: Value = serde_json::from_str(&body_string).unwrap();
+
+    // Assert that the response status code is 200 OK
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(body_json["success"], true);
+    assert_eq!(body_json["status_code"], 200);
+    assert_eq!(body_json["message"], "User logged in successfully");
+}
+
+/**
+ * This test verify the user login process with invalid credentials.
+ */
+#[tokio::test]
+async fn test_login_user_invalid_credentials() {
+    let app = before_each_test().await;
+
+    let email = "test@invalid.com";
+    let password = "password123";
+    let wrong_password = "password456";
+
+    // Create a user with the email and password
+    create_user(app.clone(), email, Some(password)).await;
+
+    let request_body = serde_json::json!({
+        "email": email,
+        "password": wrong_password
+    });
+
+    let request = Request::builder()
+        .method("POST")
+        .uri("/api/v1/auth/login")
+        .header("Content-Type", "application/json")
+        .body(Body::from(request_body.to_string()))
+        .unwrap();
+
+    let response = send_request(app, request).await;
+    let status = response.status();
+
+    // Convert the response body string
+    let body_string = convert_response_to_string(response).await;
+
+    // Deserialize the response body into a JSON value
+    let body_json: Value = serde_json::from_str(&body_string).unwrap();
+
+    // Assert that the response status code is 401 Unauthorized
+    assert_eq!(status, StatusCode::UNAUTHORIZED);
+    assert_eq!(body_json["success"], false);
+    assert_eq!(body_json["status_code"], 401);
+    assert_eq!(body_json["message"], "Invalid Credentials");
+}
+
+/**
+ * This test verify the user login process with non-existent email.
+ */
+#[tokio::test]
+async fn test_login_user_non_existent_email() {
+    let app = before_each_test().await;
+
+    let email = "nonexistent@example.com";
+    let password = "password123";
+
+    let request_body = serde_json::json!({
+        "email": email,
+        "password": password
+    });
+
+    let request = Request::builder()
+        .method("POST")
+        .uri("/api/v1/auth/login")
+        .header("Content-Type", "application/json")
+        .body(Body::from(request_body.to_string()))
+        .unwrap();
+
+    let response = send_request(app, request).await;
+    let status = response.status();
+
+    // Convert the response body string
+    let body_string = convert_response_to_string(response).await;
+
+    // Deserialize the response body into a JSON value
+    let body_json: Value = serde_json::from_str(&body_string).unwrap();
+
+    // Assert that the response status code is 404 Not Found
+    assert_eq!(status, StatusCode::NOT_FOUND);
+    assert_eq!(body_json["success"], false);
+    assert_eq!(body_json["status_code"], 404);
+    assert_eq!(body_json["message"], "User does not exist");
 }
