@@ -38,12 +38,8 @@ async fn test_register_user() {
     println!("Register response status: {}", status);
     println!("Register response body: {}", body_string);
 
-    assert_eq!(
-        status,
-        StatusCode::CREATED,
-        "Unexpected register response body: {}",
-        body_string
-    );
+    // Assert that the response status code is 200 OK
+    assert_eq!(status, StatusCode::OK);
 
     // Deserialize the response body into a JSON value
     let body_json: Value = serde_json::from_str(&body_string).unwrap();

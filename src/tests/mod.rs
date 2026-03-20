@@ -1,6 +1,7 @@
 use axum::{Router, body::Body, http::Request, response::Response};
 use dotenvy::dotenv;
 use tower::ServiceExt;
+use tower_cookies::CookieManagerLayer;
 use uuid::Uuid;
 
 pub mod auth_test;
@@ -50,7 +51,9 @@ pub async fn before_each_test() -> Router {
     };
 
     // Build the application with all routes
-    let app = create_routes(app_state);
+    let app = create_routes(app_state)
+        // Add cookie management middleware
+        .layer(CookieManagerLayer::new());
 
     app
 }
