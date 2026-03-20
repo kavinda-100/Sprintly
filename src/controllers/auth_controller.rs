@@ -37,11 +37,6 @@ pub async fn register_user(
         ApiError::BadRequest(error_messages)
     })?;
 
-    // comparing password and confirm_password
-    if payload.password != payload.confirm_password {
-        return Err(ApiError::BadRequest("Passwords do not match".into()));
-    }
-
     // Check if the email is already registered
     let existing_user = sqlx::query_as::<_, User>("SELECT * FROM users WHERE email = $1")
         .bind(&payload.email)

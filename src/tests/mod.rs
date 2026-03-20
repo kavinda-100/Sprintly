@@ -1,4 +1,9 @@
-use axum::{Router, body::Body, http::Request, response::Response};
+use axum::{
+    Router,
+    body::{Body, to_bytes},
+    http::Request,
+    response::Response,
+};
 use dotenvy::dotenv;
 use tower::ServiceExt;
 use tower_cookies::CookieManagerLayer;
@@ -66,4 +71,22 @@ pub async fn before_each_test() -> Router {
 #[allow(dead_code)]
 pub async fn send_request(app: Router, request: Request<Body>) -> Response {
     app.clone().into_service().oneshot(request).await.unwrap()
+}
+
+/**
+ * This function is a helper to convert a response body into a string. It takes a Response with a Body, converts the body into bytes, and then converts the bytes into a UTF-8 string. This is useful for testing to easily read and assert the contents of the response body.
+ */
+#[allow(dead_code)]
+pub async fn convert_response_to_string(response: Response<Body>) -> String {
+    // Convert the response body into bytes
+    let body_bytes = to_bytes(response.into_body(), usize::MAX).await.unwrap();
+
+    // Print status and body before assertions so failures still show debug info.
+    let body_string = String::from_utf8(body_bytes.to_vec()).unwrap();
+
+    println!("----------------------------------------");
+    println!("Response body: {}", body_string);
+    println!("----------------------------------------");
+
+    body_string
 }
