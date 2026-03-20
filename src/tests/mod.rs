@@ -13,6 +13,8 @@ use uuid::Uuid;
 mod auth_test;
 #[cfg(test)]
 mod health_test;
+#[cfg(test)]
+mod workspace_test;
 
 use crate::{
     config::{AppState, env::EnvConfig},
@@ -21,10 +23,15 @@ use crate::{
     routes::create_routes,
 };
 
-// This function create a test user for testing
+/**
+ * This function create a test user for testing. It returns a User struct with predefined values. This user can be used in tests to simulate an authenticated user without going through the actual registration and login process. The function generates a new UUID for the user ID, sets a fixed email and name, and leaves optional fields as None. The created_at and updated_at fields are set to the current time. This allows tests to focus on the functionality being tested without worrying about user creation and authentication. It avoid auth middleware by directly creating a test user and using the test mode of
+ * the application which bypasses authentication and returns the test user for any request that requires authentication
+ */
 pub fn create_test_user() -> User {
     User {
-        id: Uuid::new_v4(),
+        id: "1f29c101-830e-4d99-80a0-48b8b56fa091"
+            .parse::<Uuid>()
+            .unwrap(),
         email: "test@example.com".to_string(),
         name: "Test User".to_string(),
         google_id: None,

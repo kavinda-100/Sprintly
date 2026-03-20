@@ -1,4 +1,4 @@
-use crate::tests::{before_each_test, convert_response_to_string, send_request};
+use crate::tests::{before_each_test, convert_response_to_string, create_test_user, send_request};
 
 use axum::{
     body::Body,
@@ -280,4 +280,48 @@ async fn test_login_user_non_existent_email() {
     assert_eq!(body_json["success"], false);
     assert_eq!(body_json["status_code"], 404);
     assert_eq!(body_json["message"], "User does not exist");
+}
+
+// ===================================== tests for get me endpoint ==================================================
+
+/**
+ * This test verify the get me endpoint with valid credentials.
+ */
+#[tokio::test]
+async fn test_get_me() {
+    let app = before_each_test().await;
+
+    // test user
+    let user = create_test_user();
+
+    // call the get me endpoint
+    let request = Request::builder()
+        .method("GET")
+        .uri("/api/v1/auth/me")
+        .header("Content-Type", "application/json")
+        .body(Body::empty())
+        .unwrap();
+
+    let response = send_request(app, request).await;
+    let status = response.status();
+
+    // Convert the response body string
+    let body_string = convert_response_to_string(response).await;
+
+    // Deserialize the response body into a JSON value
+    let body_json: Value = serde_json::from_str(&body_string).unwrap();
+
+    // Assert that the response status code is 200 OK
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(body_json["success"], true);
+    assert_eq!(body_json["status_code"], 200);
+    assert_eq!(body_json["message"], "Authenticated user");
+    // Assert that the response contains the expected user information
+    assert!(body_json["data"]["id"].as_str().is_some());
+    assert_eq!(body_json["data"]["email"], user.email);
+    assert_eq!(body_json["data"]["name"], user.name);
+    assert!(body_json["data"]["google_id"].is_null());
+    assert!(body_json["data"]["avatar_url"].is_null());
+    assert!(body_json["data"]["created_at"].as_str().is_some());
+    assert!(body_json["data"]["updated_at"].as_str().is_some());
 }
