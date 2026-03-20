@@ -59,19 +59,6 @@ CREATE TABLE IF NOT EXISTS projects (
 CREATE INDEX IF NOT EXISTS idx_projects_workspace_id ON projects(workspace_id);
 
 -- =======================
--- TASK STATUS & PRIORITY
--- =======================
-CREATE TABLE IF NOT EXISTS task_status (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS task_priority (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name TEXT NOT NULL
-);
-
--- =======================
 -- TASKS TABLE
 -- =======================
 CREATE TABLE IF NOT EXISTS tasks (
@@ -79,9 +66,20 @@ CREATE TABLE IF NOT EXISTS tasks (
     project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
     title TEXT NOT NULL,
     description TEXT,
-    status_id UUID NOT NULL REFERENCES task_status(id),
-    priority_id UUID NOT NULL REFERENCES task_priority(id),
+
+    task_status TEXT NOT NULL CHECK (
+        task_status IN ('todo', 'in_progress', 'done')
+    ),
+
+    task_priority TEXT NOT NULL CHECK (
+        task_priority IN ('low', 'medium', 'high')
+    ),
+
     owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+    due_date TIMESTAMP,
+    position INTEGER DEFAULT 0,
+
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -90,9 +88,9 @@ CREATE TABLE IF NOT EXISTS tasks (
 -- TASKS TABLE INDEXES
 -- =======================
 CREATE INDEX IF NOT EXISTS idx_tasks_project_id ON tasks(project_id);
-CREATE INDEX IF NOT EXISTS idx_tasks_status_id ON tasks(status_id);
-CREATE INDEX IF NOT EXISTS idx_tasks_priority_id ON tasks(priority_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_owner_id ON tasks(owner_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(task_status);
+CREATE INDEX IF NOT EXISTS idx_tasks_priority ON tasks(task_priority);
 
 
 -- =======================

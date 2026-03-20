@@ -1,35 +1,154 @@
 // Endpoints data
 const endpoints = [
 	{
-		endpoint: '/health',
-		method: 'GET',
-		description: 'Health check endpoint',
-		status: 'active',
+		endpoints: [
+			{
+				endpoint: '/health',
+				method: 'GET',
+				description: 'Health check endpoint',
+				status: 'active',
+			},
+		],
 	},
 	{
-		endpoint: '/api/v1/auth/register',
-		method: 'POST',
-		description: 'Register a new user account',
-		status: 'active',
+		name: 'Authentication',
+		endpoints: [
+			{
+				endpoint: '/api/v1/auth/register',
+				method: 'POST',
+				description: 'Register a new user account',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/auth/login',
+				method: 'POST',
+				description: 'Login with email and password',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/auth/logout',
+				method: 'POST',
+				description: 'Logout the current user',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/auth/google',
+				method: 'GET',
+				description: 'Login with Google OAuth',
+				status: 'inactive',
+			},
+		],
 	},
 	{
-		endpoint: '/api/v1/auth/login',
-		method: 'POST',
-		description: 'Login with email and password',
-		status: 'active',
+		name: 'Workspaces',
+		endpoints: [
+			{
+				endpoint: '/api/v1/workspaces',
+				method: 'POST',
+				description: 'Create a new workspace',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/workspaces',
+				method: 'GET',
+				description: 'Fetch all workspaces for the authenticated user',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/workspaces/{workspace_id}',
+				method: 'GET',
+				description:
+					'Fetch a specific workspace for the authenticated user',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/workspaces/{workspace_id}',
+				method: 'PUT',
+				description:
+					'Update a specific workspace for the authenticated user',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/workspaces/{workspace_id}',
+				method: 'DELETE',
+				description:
+					'Delete a specific workspace for the authenticated user',
+				status: 'active',
+			},
+			{
+				endpoint:
+					'/api/v1/workspaces/{workspace_id}/projects?page=1&page_size=20',
+				method: 'GET',
+				description:
+					'Fetch projects for a specific workspace for the authenticated user',
+				status: 'active',
+			},
+		],
 	},
-	,
 	{
-		endpoint: '/api/v1/auth/logout',
-		method: 'POST',
-		description: 'Logout the current user',
-		status: 'active',
+		name: 'Projects',
+		endpoints: [
+			{
+				endpoint: '/api/v1/projects/',
+				method: 'POST',
+				description: 'Create a new project for the specific workspace.',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/projects/{project_id}',
+				method: 'GET',
+				description:
+					'Fetch a specific project for the authenticated user',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/projects/{project_id}',
+				method: 'PUT',
+				description:
+					'Update a specific project for the authenticated user',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/projects/{project_id}',
+				method: 'DELETE',
+				description:
+					'Delete a specific project for the authenticated user',
+				status: 'active',
+			},
+			{
+				endpoint:
+					'/api/v1/projects/{project_id}/tasks?status=todo&priority=high&page=1&page_size=20',
+				method: 'GET',
+				description:
+					'Fetch tasks for a specific project for the authenticated user',
+				status: 'active',
+			},
+		],
 	},
 	{
-		endpoint: '/api/v1/auth/google',
-		method: 'GET',
-		description: 'Login with Google OAuth',
-		status: 'active',
+		name: 'Tasks',
+		endpoints: [
+			{
+				endpoint: '/api/v1/tasks',
+				method: 'POST',
+				description: 'Create a new task for project.',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/tasks/{task_id}',
+				method: 'PUT',
+				description:
+					'Update a specific task for the authenticated user',
+				status: 'active',
+			},
+			{
+				endpoint: '/api/v1/tasks/{task_id}',
+				method: 'DELETE',
+				description:
+					'Delete a specific task for the authenticated user',
+				status: 'active',
+			},
+		],
 	},
 ];
 
@@ -52,6 +171,19 @@ function getStatusClass(status) {
 	return statusLower === 'active' ? 'active' : 'inactive';
 }
 
+// Function to get subtle background color for each group
+function getGroupColor(groupName) {
+	const groupLower = (groupName || 'General').toLowerCase();
+	const colorMap = {
+		general: '#f9fafb',
+		authentication: '#f3e8ff',
+		workspaces: '#ecfdf5',
+		projects: '#eff6ff',
+		tasks: '#fffbeb',
+	};
+	return colorMap[groupLower] || '#f9fafb';
+}
+
 // Function to render table rows
 function renderTable() {
 	const tbody = document.querySelector('.endpoints-table tbody');
@@ -64,35 +196,48 @@ function renderTable() {
 	// Clear existing rows
 	tbody.innerHTML = '';
 
-	// Loop through endpoints and create rows
-	endpoints.forEach((item) => {
-		const row = document.createElement('tr');
+	// Loop through grouped endpoints and create rows
+	endpoints.forEach((group) => {
+		const groupName = group.name || 'General';
+		const groupEndpoints = Array.isArray(group.endpoints)
+			? group.endpoints
+			: [];
 
-		// Create cells
-		const endpointCell = document.createElement('td');
-		endpointCell.innerHTML = `<code>${item.endpoint}</code>`;
+		if (groupEndpoints.length === 0) {
+			return;
+		}
 
-		const methodCell = document.createElement('td');
-		const methodClass = getMethodClass(item.method);
-		methodCell.innerHTML = `<span class="method-badge ${methodClass}">${item.method.toUpperCase()}</span>`;
+		groupEndpoints.forEach((item) => {
+			const row = document.createElement('tr');
+			row.style.backgroundColor = getGroupColor(groupName);
 
-		const descriptionCell = document.createElement('td');
-		descriptionCell.textContent = item.description;
+			const groupCell = document.createElement('td');
+			groupCell.textContent = groupName;
+			row.appendChild(groupCell);
 
-		const statusCell = document.createElement('td');
-		const statusClass = getStatusClass(item.status);
-		const statusText =
-			item.status.charAt(0).toUpperCase() + item.status.slice(1);
-		statusCell.innerHTML = `<span class="status-badge ${statusClass}">${statusText}</span>`;
+			const endpointCell = document.createElement('td');
+			endpointCell.innerHTML = `<code>${item.endpoint}</code>`;
 
-		// Append cells to row
-		row.appendChild(endpointCell);
-		row.appendChild(methodCell);
-		row.appendChild(descriptionCell);
-		row.appendChild(statusCell);
+			const methodCell = document.createElement('td');
+			const methodClass = getMethodClass(item.method);
+			methodCell.innerHTML = `<span class="method-badge ${methodClass}">${item.method.toUpperCase()}</span>`;
 
-		// Append row to tbody
-		tbody.appendChild(row);
+			const descriptionCell = document.createElement('td');
+			descriptionCell.textContent = item.description;
+
+			const statusCell = document.createElement('td');
+			const statusClass = getStatusClass(item.status);
+			const statusText =
+				item.status.charAt(0).toUpperCase() + item.status.slice(1);
+			statusCell.innerHTML = `<span class="status-badge ${statusClass}">${statusText}</span>`;
+
+			row.appendChild(endpointCell);
+			row.appendChild(methodCell);
+			row.appendChild(descriptionCell);
+			row.appendChild(statusCell);
+
+			tbody.appendChild(row);
+		});
 	});
 }
 

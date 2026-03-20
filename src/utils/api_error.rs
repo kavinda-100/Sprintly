@@ -9,6 +9,7 @@ pub enum ApiError {
     BadRequest(String),
     InternalServerError(String),
     Conflict(String),
+    Forbidden(String),
 }
 
 #[derive(Serialize)]
@@ -27,6 +28,7 @@ impl IntoResponse for ApiError {
             ApiError::BadRequest(msg) => (StatusCode::BAD_REQUEST, msg),
             ApiError::InternalServerError(msg) => (StatusCode::INTERNAL_SERVER_ERROR, msg),
             ApiError::Conflict(msg) => (StatusCode::CONFLICT, msg),
+            ApiError::Forbidden(msg) => (StatusCode::FORBIDDEN, msg),
         };
 
         let body = serde_json::to_string(&ApiErrorResponse {

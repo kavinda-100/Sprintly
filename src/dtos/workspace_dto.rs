@@ -23,6 +23,13 @@ pub struct UpdateWorkspacePayload {
     pub name: String,
 }
 
+#[derive(Debug, Deserialize)]
+// GET /api/v1/workspaces/{workspace_id}/projects?page=1&page_size=20
+pub struct WorkspaceProjectQuery {
+    pub page: Option<i32>,
+    pub page_size: Option<i32>,
+}
+
 #[derive(Debug, Serialize)]
 pub struct WorkspaceResponse {
     pub id: Uuid,
