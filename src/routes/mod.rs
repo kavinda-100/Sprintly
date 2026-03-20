@@ -17,19 +17,20 @@ use crate::{
 
 /// Creates the main API router with all route groups
 /// This is where you compose all your route modules together
-pub fn create_routes() -> Router<AppState> {
+pub fn create_routes(state: AppState) -> Router {
     // Serve static files from the "public" directory at the root path
     let static_files = ServeDir::new("public");
 
     Router::new()
-        // Specific routes first
-        .route("/health", get(health_check))
         // API v1 routes
         .nest("/api/v1", api_v1_routes())
+        // Specific routes first
+        .route("/health", get(health_check))
         // API v2 routes (future expansion)
         // .nest("/api/v2", api_v2_routes(pool))
         // Serve static files as fallback (only when no other routes match)
         .fallback_service(static_files)
+        .with_state(state)
 }
 
 // Helper function to create API v1 routes

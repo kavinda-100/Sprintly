@@ -3,6 +3,7 @@
 		"dotenvy",
 		"getrandom",
 		"jsonwebtoken",
+		"oneshot",
 		"ossp",
 		"reqwest",
 		"Sprintly"

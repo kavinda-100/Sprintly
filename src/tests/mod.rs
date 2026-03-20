@@ -1,7 +1,9 @@
-use axum::Router;
+use axum::{Router, body::Body, http::Request, response::Response};
 use dotenvy::dotenv;
+use tower::ServiceExt;
 use uuid::Uuid;
 
+pub mod auth_test;
 pub mod health_test;
 
 use crate::{
@@ -29,6 +31,7 @@ pub fn create_test_user() -> User {
  * This function is called before each test to set up the application state and return the application router. It loads environment variables, establishes a database connection, and builds the application with all routes. Each test can call this function to get a fresh instance of the application with a clean state.
  * Returns a Router that can be used to send test requests to the application.
  */
+#[allow(dead_code)]
 pub async fn before_each_test() -> Router {
     // Load environment variables from .env file
     dotenv().ok();
@@ -47,7 +50,15 @@ pub async fn before_each_test() -> Router {
     };
 
     // Build the application with all routes
-    let app = create_routes().with_state(app_state);
+    let app = create_routes(app_state);
 
     app
+}
+
+/**
+ * This function is a helper to send a request to the application and get the response. It takes the application router and a request, sends the request to the application, and returns the response. This is useful for testing individual endpoints by simulating HTTP requests and checking the responses.
+ */
+#[allow(dead_code)]
+pub async fn send_request(app: Router, request: Request<Body>) -> Response {
+    app.clone().into_service().oneshot(request).await.unwrap()
 }

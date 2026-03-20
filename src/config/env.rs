@@ -19,7 +19,6 @@ impl DevMode {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-#[allow(dead_code)]
 pub struct EnvConfig {
     pub dev_mode: DevMode,
     pub database_url: String,

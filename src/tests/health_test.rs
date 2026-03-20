@@ -1,4 +1,4 @@
-use crate::tests::before_each_test;
+use crate::tests::{before_each_test, send_request};
 
 use axum::{
     body::{Body, to_bytes},
@@ -18,7 +18,7 @@ async fn test_health_check() {
         .body(Body::empty())
         .unwrap();
 
-    let response = app.oneshot(request).await.unwrap();
+    let response = send_request(app, request).await;
 
     assert_eq!(response.status(), StatusCode::OK);
 
