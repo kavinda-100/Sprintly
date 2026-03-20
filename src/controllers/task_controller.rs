@@ -213,3 +213,58 @@ pub async fn delete_task(
         None,
     )))
 }
+
+/**
+ * Handler for retrieving a task by its ID. Checks user authentication and fetches the task from the database if it exists and belongs to the user. Returns the retrieved task in the response if successful.
+ * Path: GET /api/v1/tasks/{task_id}
+ * access: requires authentication
+ * access: any authenticated user can retrieve a task they have access to.
+ */
+pub async fn get_task_by_id(
+    State(state): State<AppState>,
+    AuthUser(user): AuthUser,
+    Path(task_id): Path<Uuid>,
+) -> Result<Json<ApiResponse<TaskResponse>>, ApiError> {
+    // logging the task retrieval attempt with the email (but not the password)
+    tracing::info!(
+        "Attempting to retrieve task: {} by user: {}",
+        task_id,
+        user.email
+    );
+
+    // fetch the task from the database
+    let task = sqlx::query_as::<_, Task>("SELECT * FROM tasks WHERE id = $1")
+        .bind(task_id)
+        .fetch_optional(&state.db)
+        .await
+        .map_err(|_| ApiError::InternalServerError("Failed to fetch task".into()))?;
+
+    // if the task doesn't exist, return a 404 error
+    let task = match task {
+        Some(task) => task,
+        None => {
+            tracing::warn!("Task not found: {}", task_id);
+            return Err(ApiError::NotFound("Task not found".into()));
+        }
+    };
+
+    // return the retrieved task in the response
+    Ok(Json(ApiResponse::new(
+        true,
+        StatusCode::OK,
+        "Task retrieved successfully",
+        Some(TaskResponse {
+            id: task.id,
+            project_id: task.project_id,
+            title: task.title,
+            description: task.description,
+            task_status: task.task_status,
+            task_priority: task.task_priority,
+            owner_id: task.owner_id,
+            due_date: task.due_date,
+            position: task.position,
+            created_at: task.created_at,
+            updated_at: task.updated_at,
+        }),
+    )))
+}
