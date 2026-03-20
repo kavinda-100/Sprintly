@@ -3,8 +3,9 @@ use tower_cookies::Cookies;
 use uuid::Uuid;
 
 use crate::{
-    config::AppState,
+    config::{AppState, env::DevMode},
     models::User,
+    tests::create_test_user,
     utils::{api_error::ApiError, jwt::verify_jwt},
 };
 
@@ -18,6 +19,14 @@ impl FromRequestParts<AppState> for AuthUser {
         parts: &mut Parts,
         state: &AppState,
     ) -> Result<Self, Self::Rejection> {
+        // In test mode, return a predefined test user without checking cookies or JWT
+        if state.env_config.dev_mode == DevMode::Test {
+            let test_user = create_test_user();
+            return Ok(AuthUser(test_user));
+        }
+
+        // In non-test modes, perform the full authentication flow
+
         // Extract the database pool from the application state
         let cookies = Cookies::from_request_parts(parts, &state)
             .await

@@ -13,6 +13,7 @@ mod middleware;
 mod models;
 mod routes;
 mod services;
+mod tests;
 mod utils;
 
 use crate::{
