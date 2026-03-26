@@ -3,10 +3,6 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use uuid::Uuid;
 
-pub mod task_enum;
-
-use crate::models::task_enum::{TaskPriority, TaskStatus};
-
 #[derive(Debug, Serialize, Deserialize, FromRow)]
 #[allow(dead_code)]
 pub struct User {
@@ -48,11 +44,29 @@ pub struct Task {
     pub project_id: Uuid,
     pub title: String,
     pub description: Option<String>,
-    pub task_status: TaskStatus,
-    pub task_priority: TaskPriority,
+    pub task_status: i64,
+    pub task_priority: i64,
     pub owner_id: Uuid,
-    pub due_date: Option<NaiveDateTime>,
+    pub due_date: Option<String>,
     pub position: i32,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+}
+
+#[derive(Debug, Serialize, Deserialize, FromRow)]
+#[allow(dead_code)]
+pub struct TaskStatus {
+    pub id: i64,
+    pub name: String,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+}
+
+#[derive(Debug, Serialize, Deserialize, FromRow)]
+#[allow(dead_code)]
+pub struct TaskPriority {
+    pub id: i64,
+    pub name: String,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }

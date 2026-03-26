@@ -13,10 +13,7 @@ use crate::{
         task_dto::{TaskQuery, TaskResponse},
     },
     middleware::auth::AuthUser,
-    models::{
-        Project, Task,
-        task_enum::{TaskPriority, TaskStatus},
-    },
+    models::{Project, Task},
     utils::{api_error::ApiError, format_validation_errors, response::ApiResponse},
 };
 
@@ -260,8 +257,8 @@ pub async fn get_all_tasks_for_project(
     );
 
     // check the query parameters has values or assign default values
-    let status_filter = _query.status.unwrap_or(TaskStatus::Todo);
-    let priority_filter = _query.priority.unwrap_or(TaskPriority::Medium);
+    let status_filter = _query.status;
+    let priority_filter = _query.priority;
     let page = _query.page.unwrap_or(1);
     let page_size = _query.page_size.unwrap_or(20);
 
