@@ -58,6 +58,7 @@ pub struct Task {
 pub struct TaskStatus {
     pub id: i64,
     pub name: String,
+    pub project_id: Uuid,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
@@ -67,6 +68,7 @@ pub struct TaskStatus {
 pub struct TaskPriority {
     pub id: i64,
     pub name: String,
+    pub project_id: Uuid,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
 }
