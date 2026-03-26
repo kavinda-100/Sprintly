@@ -66,20 +66,11 @@ CREATE TABLE IF NOT EXISTS tasks (
     project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
     title TEXT NOT NULL,
     description TEXT,
-
-    task_status TEXT NOT NULL CHECK (
-        task_status IN ('todo', 'in_progress', 'done')
-    ),
-
-    task_priority TEXT NOT NULL CHECK (
-        task_priority IN ('low', 'medium', 'high')
-    ),
-
+    task_status SERIAL NOT NULL,
+    task_priority SERIAL NOT NULL,
     owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-
-    due_date TIMESTAMP,
+    due_date TEXT,
     position INTEGER DEFAULT 0,
-
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
@@ -91,6 +82,28 @@ CREATE INDEX IF NOT EXISTS idx_tasks_project_id ON tasks(project_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_owner_id ON tasks(owner_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(task_status);
 CREATE INDEX IF NOT EXISTS idx_tasks_priority ON tasks(task_priority);
+
+-- =======================
+-- TASKS STATUS
+-- =======================
+CREATE TABLE IF NOT EXISTS task_statuses (
+    id SERIAL PRIMARY KEY,
+    name TEXT UNIQUE NOT NULL,
+    project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- =======================
+-- TASKS PRIORITY
+-- =======================
+CREATE TABLE IF NOT EXISTS task_priorities (
+    id SERIAL PRIMARY KEY,
+    name TEXT UNIQUE NOT NULL,
+    project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
 
 
 -- =======================

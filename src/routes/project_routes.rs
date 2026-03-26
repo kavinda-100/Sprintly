@@ -5,9 +5,13 @@ use axum::{
 
 use crate::{
     config::AppState,
-    controllers::project_controller::{
-        create_project, delete_project, get_all_tasks_for_project, get_project_by_id,
-        update_project,
+    controllers::{
+        project_controller::{
+            create_project, delete_project, get_all_tasks_for_project, get_project_by_id,
+            update_project,
+        },
+        task_priority_controller::create_task_priority,
+        task_status_controller::create_task_status,
     },
 };
 
@@ -26,5 +30,13 @@ pub fn create_project_routes() -> Router<AppState> {
         .route(
             "/projects/{project_id}/tasks",
             get(get_all_tasks_for_project),
+        )
+        .route(
+            "/projects/{project_id}/task-statuses",
+            post(create_task_status),
+        )
+        .route(
+            "/projects/{project_id}/task-priorities",
+            post(create_task_priority),
         )
 }

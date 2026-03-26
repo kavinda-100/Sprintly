@@ -47,6 +47,7 @@ pub fn create_test_user() -> User {
  * Returns a Router that can be used to send test requests to the application.
  */
 #[allow(dead_code)]
+#[allow(warnings)]
 pub async fn before_each_test() -> Router {
     // Load environment variables from .env file
     dotenv().ok();

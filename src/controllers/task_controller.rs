@@ -10,7 +10,7 @@ use crate::{
     config::AppState,
     dtos::task_dto::{CreateTaskPayload, TaskResponse, UpdateTaskPayload},
     middleware::auth::AuthUser,
-    models::Task,
+    models::{Project, Task},
     utils::{api_error::ApiError, format_validation_errors, response::ApiResponse},
 };
 
@@ -40,6 +40,17 @@ pub async fn create_task(
         ApiError::BadRequest(error_messages)
     })?;
 
+    // check if the project exists,
+    let project_exists = sqlx::query_as::<_, Project>("SELECT * FROM projects WHERE id = $1")
+        .bind(payload.project_id)
+        .fetch_optional(&state.db)
+        .await
+        .map_err(|_| ApiError::InternalServerError("Failed to fetch project".into()))?;
+
+    if project_exists.is_none() {
+        return Err(ApiError::NotFound("Project not found".into()));
+    }
+
     // create the task in the database
     let task = sqlx::query_as::<_, Task>(
         "INSERT INTO tasks (project_id, title, description, task_status, task_priority, owner_id, due_date)
@@ -55,7 +66,10 @@ pub async fn create_task(
     .bind(payload.due_date)
     .fetch_one(&state.db)
     .await
-    .map_err(|_| ApiError::InternalServerError("Failed to create task".into()))?;
+    .map_err(|e| {
+        tracing::error!("Failed to create task: {:?}", e);
+        ApiError::InternalServerError("Failed to create task".into())
+    })?;
 
     // return the created task in the response
     Ok(Json(ApiResponse::new(

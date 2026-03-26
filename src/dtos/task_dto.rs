@@ -3,8 +3,6 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
-use crate::models::task_enum::{TaskPriority, TaskStatus};
-
 #[derive(Debug, Deserialize, Validate)]
 pub struct CreateTaskPayload {
     pub project_id: Uuid,
@@ -19,10 +17,10 @@ pub struct CreateTaskPayload {
     #[validate(length(max = 1000, message = "Description too long (1000 characters max)"))]
     pub description: Option<String>,
 
-    pub task_status: TaskStatus,
-    pub task_priority: TaskPriority,
+    pub task_status: i64,
+    pub task_priority: i64,
 
-    pub due_date: Option<NaiveDateTime>,
+    pub due_date: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Validate)]
@@ -37,10 +35,10 @@ pub struct UpdateTaskPayload {
     #[validate(length(max = 1000, message = "Description too long (1000 characters max)"))]
     pub description: Option<String>,
 
-    pub task_status: Option<TaskStatus>,
-    pub task_priority: Option<TaskPriority>,
+    pub task_status: Option<i64>,
+    pub task_priority: Option<i64>,
 
-    pub due_date: Option<chrono::NaiveDateTime>,
+    pub due_date: Option<String>,
 
     pub position: Option<i32>,
 }
@@ -48,8 +46,8 @@ pub struct UpdateTaskPayload {
 #[derive(Debug, Deserialize)]
 // GET /projects/{project_id}/tasks?status=todo&priority=high&page=1&page_size=20
 pub struct TaskQuery {
-    pub status: Option<TaskStatus>,
-    pub priority: Option<TaskPriority>,
+    pub status: Option<i64>,
+    pub priority: Option<i64>,
     pub page: Option<i32>,
     pub page_size: Option<i32>,
 }
@@ -60,10 +58,10 @@ pub struct TaskResponse {
     pub project_id: Uuid,
     pub title: String,
     pub description: Option<String>,
-    pub task_status: TaskStatus,
-    pub task_priority: TaskPriority,
+    pub task_status: i64,
+    pub task_priority: i64,
     pub owner_id: Uuid,
-    pub due_date: Option<NaiveDateTime>,
+    pub due_date: Option<String>,
     pub position: i32,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
